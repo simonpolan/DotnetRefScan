@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\SimonPolan\.nuget\packages\microsoft.testplatform.testhost\17.1.0\build\netcoreapp2.1\x64\Microsoft.TestPlatform.PlatformAbstractions.dll" />
+    <Content Remove="C:\Users\SimonPolan\.nuget\packages\microsoft.testplatform.testhost\17.1.0\build\netcoreapp2.1\x64\testhost.dll" />
+    <Content Remove="C:\Users\SimonPolan\.nuget\packages\microsoft.testplatform.testhost\17.1.0\build\netcoreapp2.1\x64\testhost.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\SimonPolan\.nuget\packages\nunit3testadapter\4.2.1\build\netcoreapp2.1\nunit.engine.api.dll" />
+    <None Remove="C:\Users\SimonPolan\.nuget\packages\nunit3testadapter\4.2.1\build\netcoreapp2.1\nunit.engine.core.dll" />
+    <None Remove="C:\Users\SimonPolan\.nuget\packages\nunit3testadapter\4.2.1\build\netcoreapp2.1\nunit.engine.dll" />
+    <None Remove="C:\Users\SimonPolan\.nuget\packages\nunit3testadapter\4.2.1\build\netcoreapp2.1\NUnit3.TestAdapter.dll" />
+    <None Remove="C:\Users\SimonPolan\.nuget\packages\nunit3testadapter\4.2.1\build\netcoreapp2.1\NUnit3.TestAdapter.pdb" />
+    <None Remove="C:\Users\SimonPolan\.nuget\packages\nunit3testadapter\4.2.1\build\netcoreapp2.1\testcentric.engine.metadata.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="NUnit.Analyzers" Version="3.8.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DotnetRefScan\DotnetRefScan.csproj" />
+  </ItemGroup>
+
+</Project>

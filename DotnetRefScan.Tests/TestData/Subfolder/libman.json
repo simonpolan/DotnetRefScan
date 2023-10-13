@@ -1,0 +1,10 @@
+﻿{
+	"version": "1.0",
+	"defaultProvider": "jsdelivr",
+	"libraries": [
+		{
+			"library": "package3@7.8.9",
+			"destination": "1"
+		}
+	]
+}
