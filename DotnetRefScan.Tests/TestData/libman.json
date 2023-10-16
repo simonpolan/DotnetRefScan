@@ -1,0 +1,15 @@
+﻿{
+	"version": "1.0",
+	"defaultProvider": "cdnjs",
+	"libraries": [
+		{
+			"provider": "jsdelivr",
+			"library": "package1@1.2.3",
+			"destination": "1"
+		},
+		{
+			"library": "package2@4.5.6",
+			"destination": "2"
+		}
+	]
+}
