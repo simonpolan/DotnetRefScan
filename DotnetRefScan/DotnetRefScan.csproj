@@ -11,9 +11,10 @@
     <Description>Reference scanner for Dotnet applications. It loads NuGets and Libman references from your source code.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/simonpolan/DotnetRefScan</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageLicenseFile>LICENSE</PackageLicenseFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <PackageReleaseNotes>Initial version.</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,6 +24,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>DotnetRefScan.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+	  <None Include="..\README.md" Pack="true" PackagePath="\"/>
+	  <None Include="..\LICENSE" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
