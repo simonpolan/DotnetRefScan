@@ -3,8 +3,6 @@ Reference scanner for Dotnet applications.
 
 It loads used package references from your source code and package references from your license file and compares them to ensure your license file contains all used package references.
 
-[![Publish NuGet package](https://github.com/simonpolan/DotnetRefScan/actions/workflows/publish-package.yml/badge.svg)](https://github.com/simonpolan/DotnetRefScan/actions/workflows/publish-package.yml)
-
 [![PR Build and Test](https://github.com/simonpolan/DotnetRefScan/actions/workflows/pr-build-and-test.yml/badge.svg)](https://github.com/simonpolan/DotnetRefScan/actions/workflows/pr-build-and-test.yml)
 
 ## Usage

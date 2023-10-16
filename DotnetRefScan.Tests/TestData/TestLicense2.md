@@ -15,6 +15,5 @@ License text...
 | package3                          | 7.8.9   | jsdelivr   |                                   |                         |                                 |
 | CliWrap                           | 3.6.4   | NuGet      |                                   |                         |                                 |
 | coverlet.collector                | 6.0.0   | NuGet      |                                   |                         |                                 |
-| DotnetRefScan                     | 1.0.0   | NuGet      |                                   |                         |                                 |
 | Newtonsoft.Json                   | 13.0.3  | NuGet      |                                   |                         |                                 |
 | RedundantPackage                  | x.x.x   | NuGet      |                                   |                         |                                 |

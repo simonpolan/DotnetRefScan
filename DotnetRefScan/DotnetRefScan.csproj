@@ -5,9 +5,9 @@
     <RootNamespace>DotnetRefScan</RootNamespace>
     <Nullable>enable</Nullable>
     <Product>DotnetRefScan</Product>
-    <Authors>Simon Polam</Authors>
+    <Authors>Simon Polan</Authors>
     <Copyright>Copyright © Simon Polan 2023</Copyright>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Description>Reference scanner for Dotnet applications. It loads NuGets and Libman references from your source code.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/simonpolan/DotnetRefScan</PackageProjectUrl>
