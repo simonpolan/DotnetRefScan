@@ -59,7 +59,7 @@ namespace DotnetRefScan
             List<Package> transitivePackages = references
                 .Projects
                 .Where(p => p.Frameworks != null)
-                .SelectMany(p => p.Frameworks.Where(f => f.TopLevelPackages != null).SelectMany(f => f.TransitivePackages))
+                .SelectMany(p => p.Frameworks.Where(f => f.TransitivePackages != null).SelectMany(f => f.TransitivePackages))
                 .Cast<Package>()
                 .ToList();
 
