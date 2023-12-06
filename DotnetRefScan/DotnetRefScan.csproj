@@ -7,13 +7,13 @@
     <Product>DotnetRefScan</Product>
     <Authors>Simon Polan</Authors>
     <Copyright>Copyright © Simon Polan 2023</Copyright>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Description>Reference scanner for Dotnet applications. It loads NuGets and Libman references from your source code.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/simonpolan/DotnetRefScan</PackageProjectUrl>
 	<PackageLicenseFile>LICENSE</PackageLicenseFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <PackageReleaseNotes>Initial version.</PackageReleaseNotes>
+    <PackageReleaseNotes>Transitive packages listing bug fixed at CSharpProjectFileUsedReferencesProvider.</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
