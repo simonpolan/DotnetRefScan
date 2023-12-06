@@ -2,11 +2,11 @@
 
 License text...
 
-# Copyright (C) DotnetRefScan 2023.
-# All rights reserved.
-# Written by DotnetRefScan.
+### Copyright (C) DotnetRefScan 2023.
+### All rights reserved.
+### Written by DotnetRefScan.
 
-** The solution uses following 3rd party libraries: **
+**The solution uses following 3rd party libraries:**
 
 | Library                           | Version | Source     | Copyright                         | License type            | License or project link         |
 |-----------------------------------|---------|------------|-----------------------------------|-------------------------|---------------------------------|
