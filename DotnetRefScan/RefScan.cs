@@ -78,7 +78,7 @@ namespace DotnetRefScan
                 }
             }
 
-            return references.DistinctAndSorted();
+            return references.LatestAndSorted();
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace DotnetRefScan
         public async Task<ICollection<PackageReference>> LoadLicenseReferences(string licenseFileName)
         {
             ICollection<PackageReference> references = await LicenseReferencesProvider.LoadReferences(licenseFileName).ConfigureAwait(false);
-            return references.DistinctAndSorted();
+            return references.LatestAndSorted();
         }
 
         /// <summary>

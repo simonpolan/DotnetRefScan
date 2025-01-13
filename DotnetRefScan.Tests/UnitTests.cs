@@ -7,7 +7,7 @@ namespace DotnetRefScan.Tests
         private readonly string solutionRootFolder;
         private readonly string testDataFolder;
         private readonly PackageReference packageRefJson = new("Newtonsoft.Json", "13.0.3", "NuGet");
-        private readonly PackageReference packageRefCli = new("CliWrap", "3.6.4", "NuGet");
+        private readonly PackageReference packageRefCli = new("CliWrap", "3.7.0", "NuGet");
 
         public Tests()
         {
@@ -80,8 +80,10 @@ namespace DotnetRefScan.Tests
             Assert.Multiple(() =>
             {
                 Assert.That(references, Is.Not.Null);
-                Assert.That(references, Has.Count.EqualTo(3));
+                Assert.That(references, Has.Count.EqualTo(4));
+                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr")));
                 Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr")));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
                 Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
                 Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
             });
@@ -97,8 +99,10 @@ namespace DotnetRefScan.Tests
             Assert.Multiple(() =>
             {
                 Assert.That(references, Is.Not.Null);
-                Assert.That(references, Has.Count.EqualTo(2));
+                Assert.That(references, Has.Count.EqualTo(3));
+                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr")));
                 Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr")));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
                 Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
                 Assert.That(references, Does.Not.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
             });

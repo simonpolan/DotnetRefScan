@@ -6,14 +6,14 @@
     <Nullable>enable</Nullable>
     <Product>DotnetRefScan</Product>
     <Authors>Simon Polan</Authors>
-    <Copyright>Copyright © Simon Polan 2023</Copyright>
-    <Version>1.0.2</Version>
+    <Copyright>Copyright © Simon Polan 2025</Copyright>
+    <Version>2.0.0</Version>
     <Description>Reference scanner for Dotnet applications. It loads NuGets and Libman references from your source code.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/simonpolan/DotnetRefScan</PackageProjectUrl>
-	<PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <PackageReleaseNotes>Transitive packages listing bug fixed at CSharpProjectFileUsedReferencesProvider.</PackageReleaseNotes>
+    <PackageReleaseNotes>The library now searches for only the latest version of a specific reference (if multiple versions used in the project) when verifying license.</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
@@ -26,13 +26,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-	  <None Include="..\README.md" Pack="true" PackagePath="\"/>
-	  <None Include="..\LICENSE" Pack="true" PackagePath="\"/>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="CliWrap" Version="3.6.4" />
+    <PackageReference Include="CliWrap" Version="3.7.0" />
   </ItemGroup>
 
 </Project>

@@ -4,12 +4,21 @@
 	"libraries": [
 		{
 			"provider": "jsdelivr",
-			"library": "package1@1.2.3",
+			"library": "package1@1.2.1",
 			"destination": "1"
 		},
 		{
-			"library": "package2@4.5.6",
+			"provider": "jsdelivr",
+			"library": "package1@1.2.3",
 			"destination": "2"
+		},
+		{
+			"library": "package1@4.5.6",
+			"destination": "3"
+		},
+		{
+			"library": "package2@4.5.6",
+			"destination": "4"
 		}
 	]
 }
