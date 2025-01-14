@@ -195,6 +195,12 @@
             <param name="location">Scanned folder name.</param>
             <param name="searchOption">Search options.</param>
         </member>
+        <member name="P:DotnetRefScan.RefScan.ConsiderOnlyLatestVersionsIfMultipleReferenced">
+            <summary>
+            Gets or sets a value indicating whether only the latest reference version will be considered if multiple used.
+            The latest reference version will be taken based on <see cref="P:DotnetRefScan.PackageReference.Source"/> and <see cref="P:DotnetRefScan.PackageReference.Name"/>.
+            </summary>
+        </member>
         <member name="P:DotnetRefScan.RefScan.UsedReferencesProviders">
             <summary>
             Used references providers.
