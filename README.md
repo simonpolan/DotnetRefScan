@@ -106,10 +106,10 @@ var licensePackageReferences = await refScan.LoadLicenseReferences("License file
 
 ## Release notes
 
-### 2.0.0
+### 2025-01-14 - 2.0.0
 The library now searches for only the latest version of a specific reference (if multiple versions used in the project) when verifying license.
 
-### 1.0.2
+### 2023/12/06 - 1.0.2
 Initial version of the library
 
 ## License
