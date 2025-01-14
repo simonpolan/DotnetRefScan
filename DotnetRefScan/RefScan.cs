@@ -26,6 +26,12 @@ namespace DotnetRefScan
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether only the latest reference version will be considered if multiple used.
+        /// The latest reference version will be taken based on <see cref="PackageReference.Source"/> and <see cref="PackageReference.Name"/>.
+        /// </summary>
+        public bool ConsiderOnlyLatestVersionsIfMultipleReferenced { get; set; } = true;
+
+        /// <summary>
         /// Used references providers.
         /// You can add custom or remove existing providers here.
         /// </summary>
@@ -78,7 +84,9 @@ namespace DotnetRefScan
                 }
             }
 
-            return references.LatestAndSorted();
+            return ConsiderOnlyLatestVersionsIfMultipleReferenced
+                ? references.LatestAndSorted()
+                : references.DistinctAndSorted();
         }
 
         /// <summary>
@@ -89,7 +97,7 @@ namespace DotnetRefScan
         public async Task<ICollection<PackageReference>> LoadLicenseReferences(string licenseFileName)
         {
             ICollection<PackageReference> references = await LicenseReferencesProvider.LoadReferences(licenseFileName).ConfigureAwait(false);
-            return references.LatestAndSorted();
+            return references.DistinctAndSorted();
         }
 
         /// <summary>
