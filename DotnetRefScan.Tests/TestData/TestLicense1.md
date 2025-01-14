@@ -2,7 +2,7 @@
 
 License text...
 
-### Copyright (C) DotnetRefScan 2023.
+### Copyright (C) DotnetRefScan 2025.
 ### All rights reserved.
 ### Written by DotnetRefScan.
 
