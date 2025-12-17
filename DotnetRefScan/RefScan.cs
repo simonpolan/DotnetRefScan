@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DotnetRefScan
@@ -13,16 +14,19 @@ namespace DotnetRefScan
     {
         private readonly string _location;
         private readonly SearchOption _searchOption;
+        private readonly Func<string, bool>? _filter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RefScan"/> class.
         /// </summary>
         /// <param name="location">Scanned folder name.</param>
         /// <param name="searchOption">Search options.</param>
-        public RefScan(string location, SearchOption searchOption = SearchOption.AllDirectories)
+        /// <param name="filter">Package references file filter. Return <see langword="true"/> to include the file.</param>
+        public RefScan(string location, SearchOption searchOption = SearchOption.AllDirectories, Func<string, bool>? filter = null)
         {
             _location = location;
             _searchOption = searchOption;
+            _filter = filter;
         }
 
         /// <summary>
@@ -71,7 +75,9 @@ namespace DotnetRefScan
             {
                 if (provider.FileSearchPattern != null)
                 {
-                    string[] files = Directory.GetFiles(_location, provider.FileSearchPattern, _searchOption);
+                    IEnumerable<string> files = Directory
+                        .GetFiles(_location, provider.FileSearchPattern, _searchOption)
+                        .Where(IsFileAllowed);
 
                     foreach (string file in files)
                     {
@@ -114,6 +120,11 @@ namespace DotnetRefScan
             ICollection<PackageReference> redundantInLicense = licensePackageReferences.Where(IsReferenceAcceptedToBeRedundantInLicense.Not()).Except(usedPackageReferences).ToList();
 
             return new LicenseVerificationResult(usedPackageReferences, licensePackageReferences, missingInLicense, redundantInLicense);
+        }
+
+        private bool IsFileAllowed(string path)
+        {
+            return _filter?.Invoke(path) ?? true;
         }
     }
 }

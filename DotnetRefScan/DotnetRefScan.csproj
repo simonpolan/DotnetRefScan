@@ -1,38 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <RootNamespace>DotnetRefScan</RootNamespace>
-    <Nullable>enable</Nullable>
-    <Product>DotnetRefScan</Product>
-    <Authors>Simon Polan</Authors>
-    <Copyright>Copyright © Simon Polan 2025</Copyright>
-    <Version>2.1.0</Version>
-    <Description>Reference scanner for Dotnet applications. It loads NuGets and Libman references from your source code.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/simonpolan/DotnetRefScan</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <PackageReleaseNotes>The library now searches for only the latest version of a specific reference (if multiple versions used in the project) when verifying license.</PackageReleaseNotes>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <RootNamespace>DotnetRefScan</RootNamespace>
+        <Nullable>enable</Nullable>
+        <Product>DotnetRefScan</Product>
+        <Authors>Simon Polan</Authors>
+        <Copyright>Copyright © Simon Polan 2025</Copyright>
+        <Version>2.2.0</Version>
+        <Description>Reference scanner for Dotnet applications. It loads NuGets and Libman references from your source code.</Description>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageProjectUrl>https://github.com/simonpolan/DotnetRefScan</PackageProjectUrl>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <PackageReleaseNotes>Package references file filtering enabled using Regex.</PackageReleaseNotes>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>DotnetRefScan.xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DocumentationFile>DotnetRefScan.xml</DocumentationFile>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>DotnetRefScan.xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DocumentationFile>DotnetRefScan.xml</DocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
-    <None Include="..\LICENSE" Pack="true" PackagePath="\" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+        <None Include="..\LICENSE" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="CliWrap" Version="3.7.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="CliWrap" Version="3.7.0" />
+    </ItemGroup>
 
 </Project>

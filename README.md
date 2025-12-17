@@ -19,7 +19,11 @@ DotnetRefScan
 ```
 RefScan refScan = new RefScan("e.g. Solution or Project folder");
 ```
-*There is optional parameter to specify `SearchOption`, which configures the library to either search for references only in the current folder or its subfolders as well.*
+#### Optional parameters:
+  - `searchOption`
+    - Configures the library to either search for references only in the current folder or its subfolders as well
+  - `filter`
+    - Configures a Regex pattern for file filtering
 
 
 ### Verify your license
@@ -27,7 +31,7 @@ You can simply let the library to compare your license agains source code and ve
 To do that, call:
 
 ```
-var licensePackageReferences = await refScan.LoadLicenseReferences("License file name");
+var license = await refScan.VerifyLicense("License file name");
 ```
 
 The returned object will show, whether the license file `IsUpToDate` and provides list of:
