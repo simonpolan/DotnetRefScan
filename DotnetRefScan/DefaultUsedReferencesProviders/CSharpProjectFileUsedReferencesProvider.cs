@@ -12,16 +12,16 @@ namespace DotnetRefScan
     /// Used references provider for NuGet packages defined in C# project files.
     /// It uses dotnet list package command to list all top level and transitive packages from the project file.
     /// </summary>
-    public sealed class CSharpProjectFileUsedReferencesProvider : IUsedReferencesProvider
+    public class CSharpProjectFileUsedReferencesProvider : IUsedReferencesProvider
     {
         /// <inheritdoc/>
-        public string Name => nameof(CSharpProjectFileUsedReferencesProvider);
+        public virtual string Name => nameof(CSharpProjectFileUsedReferencesProvider);
 
         /// <inheritdoc/>
-        public string? FileSearchPattern => "*.csproj";
+        public virtual string? FileSearchPattern => "*.csproj";
 
         /// <inheritdoc/>
-        public async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
+        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
         {
             if (fileName == null)
             {
@@ -72,11 +72,10 @@ namespace DotnetRefScan
                     p.ResolvedVersion!,
                     "NuGet",
                     Name,
-                    fileName))                
+                    fileName))
                 .ToList()
                 .DistinctAndSorted();
         }
-
 
         private class PackageReferences
         {

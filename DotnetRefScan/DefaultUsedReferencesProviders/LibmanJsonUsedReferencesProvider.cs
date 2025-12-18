@@ -10,16 +10,16 @@ namespace DotnetRefScan
     /// <summary>
     /// Used references provider for packages defined in libman json files.
     /// </summary>
-    public sealed class LibmanJsonUsedReferencesProvider : IUsedReferencesProvider
+    public class LibmanJsonUsedReferencesProvider : IUsedReferencesProvider
     {
         /// <inheritdoc/>
-        public string Name => nameof(LibmanJsonUsedReferencesProvider);
+        public virtual string Name => nameof(LibmanJsonUsedReferencesProvider);
 
         /// <inheritdoc/>
-        public string? FileSearchPattern => "libman.json";
+        public virtual string? FileSearchPattern => "libman.json";
 
         /// <inheritdoc/>
-        public async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
+        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
         {
             if (fileName == null)
             {

@@ -1,3 +1,5 @@
+using NSubstitute;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace DotnetRefScan.Tests
@@ -151,7 +153,6 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task TestVerifyLicense()
         {
-            var name = typeof(RefScan).Assembly.GetName().Name;
             RefScan refScan = new(solutionRootFolder)
             {
                 IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && !r.Name.StartsWith("NUnit") && !r.Name.StartsWith("NuGet") && r.Name != typeof(RefScan).Assembly.GetName().Name,
@@ -159,6 +160,22 @@ namespace DotnetRefScan.Tests
             };
 
             LicenseVerificationResult result = await refScan.VerifyLicense(Path.Combine(testDataFolder, "TestLicense2.md"));
+
+            if (result.MissingInLicense.Count > 0)
+            {
+                Console.WriteLine("Missing references:");
+                foreach (var r in result.MissingInLicense)
+                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source}");
+                Console.WriteLine("------------------------------------------------------------");
+            }
+
+            if (result.RedundantInLicense.Count > 0)
+            {
+                Console.WriteLine("Redundant references:");
+                foreach (var r in result.RedundantInLicense)
+                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source}");
+                Console.WriteLine("------------------------------------------------------------");
+            }
 
             Assert.Multiple(() =>
             {
@@ -170,5 +187,68 @@ namespace DotnetRefScan.Tests
                 Assert.That(result.RedundantInLicense, Has.Count.Zero);
             });
         }
+
+        [Test]
+        public async Task TestUpdateLicense()
+        {
+            string? output = licenseTextBeforeUpdate;
+
+            var formatter = Substitute.ForPartsOf<MarkdownFormatter>();
+            formatter.GetLines(Arg.Any<string>()).Returns(info => [.. output.Split(["\r\n", "\n", "\r"], StringSplitOptions.None)]);
+
+            formatter.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<string>())).DoNotCallBase();
+            formatter.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<string>())).Do(info => output = (string)info.Args()[1]);
+
+            var licenseProvider = Substitute.ForPartsOf<MarkdownLicenseReferencesProvider>(0, 1, 2, formatter);
+            licenseProvider.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<List<string>>())).DoNotCallBase();
+            licenseProvider.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<List<string>>())).Do(info => output = string.Join(Environment.NewLine, (List<string>)info.Args()[1]).TrimEnd());
+
+            RefScan refScan = new(solutionRootFolder)
+            {
+                IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && !r.Name.StartsWith("NUnit") && !r.Source.StartsWith("NuGet") && r.Name != typeof(RefScan).Assembly.GetName().Name,
+                IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage",
+                LicenseReferencesProvider = licenseProvider,
+            };
+
+            await refScan.UpdateLicense(Path.Combine(testDataFolder, "TestLicense1.md"));
+
+            Assert.That(output, Is.EqualTo(licenseTextAfterUpdate));
+        }
+
+        private const string licenseTextBeforeUpdate = @"# DotnetRefScan license
+
+License text...
+
+### Copyright (C) DotnetRefScan 2025.
+### All rights reserved.
+### Written by DotnetRefScan.
+
+**The solution uses following 3rd party libraries:**
+
+| Library                           | Version | Source     | Copyright                         | License type            | License or project link         |
+|-----------------------------------|---------|------------|-----------------------------------|-------------------------|---------------------------------|
+| package1                          | 1.2.3   | jsdelivr   |                                   | MIT                     |                                 |
+| package2                          | 4.5.6   | cdnjs      |                                   | MIT                     |                                 |
+| package3                          | 7.8.9   | jsdelivr   |                                   | MIT                     |                                 |
+
+*Additionally, .NET, Microsoft and System libraries are used*";
+        private const string licenseTextAfterUpdate = @"# DotnetRefScan license
+
+License text...
+
+### Copyright (C) DotnetRefScan 2025.
+### All rights reserved.
+### Written by DotnetRefScan.
+
+**The solution uses following 3rd party libraries:**
+
+| Library  | Version | Source   | Copyright | License type | License or project link |
+| -------- | ------- | -------- | --------- | ------------ | ----------------------- |
+| package1 | 4.5.6   | cdnjs    |           |              |                         |
+| package2 | 4.5.6   | cdnjs    |           | MIT          |                         |
+| package1 | 1.2.3   | jsdelivr |           | MIT          |                         |
+| package3 | 7.8.9   | jsdelivr |           | MIT          |                         |
+
+*Additionally, .NET, Microsoft and System libraries are used*";
     }
 }
