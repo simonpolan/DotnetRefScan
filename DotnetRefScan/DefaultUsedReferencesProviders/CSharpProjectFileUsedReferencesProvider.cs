@@ -3,6 +3,7 @@ using CliWrap.Buffered;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -31,14 +32,22 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
 
             string workingDirectory = Path.GetDirectoryName(fileName);
 
+            var stdOutBuffer = new StringBuilder();
+            await using var output = new MemoryStream();
+
             var result = await Cli
                 .Wrap("dotnet")
                 .WithArguments("list package --include-transitive --format json")
                 .WithWorkingDirectory(workingDirectory)
-                .ExecuteBufferedAsync()
+                .WithStandardOutputPipe(PipeTarget.ToStream(output))
+                .ExecuteAsync()
                 .ConfigureAwait(false);
 
-            PackageReferences? references = JsonSerializer.Deserialize<PackageReferences>(result.StandardOutput);
+            output.Position = 0;
+            using var reader = new StreamReader(output);
+            string json = await reader.ReadToEndAsync().ConfigureAwait(false);
+
+            PackageReferences? references = JsonSerializer.Deserialize<PackageReferences>(json);
 
             if (references == null)
             {
