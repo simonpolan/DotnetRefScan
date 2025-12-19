@@ -16,24 +16,37 @@ namespace DotnetRefScan.Tests
             testDataFolder = Path.Combine(solutionRootFolder, Assembly.GetExecutingAssembly().GetName().Name!, "TestData");
         }
 
-        //[Test]
-        //public async Task TestLoadUsedReferences()
-        //{
-        //    RefScan refScan = new(solutionRootFolder, filter: p => !p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
+        [Test]
+        public async Task TestLoadUsedReferences()
+        {
+            RefScan refScan = new(solutionRootFolder, filter: p => !p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
 
-        //    ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
+            ICollection<UsedPackageReference> references = [];
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    references = await refScan.LoadUsedReferences();
+                    break;
+                }
+                catch
+                {
+                    // Ignore
+                    await Task.Delay(1000);
+                }
+            }
 
-        //    using (Assert.EnterMultipleScope())
-        //    {
-        //        Assert.That(references, Is.Not.Null);
-        //        Assert.That(references.Any(r => r.Name.StartsWith("Microsoft")), Is.True);
-        //        Assert.That(references.Any(r => r.Name.StartsWith("System")), Is.True);
-        //        Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("libman.json") == true), Is.True);
-        //        Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.csproj") == true), Is.True);
-        //        Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.False);
-        //        Assert.That(references.Any(r => r.Name == "System.Text.Json" && r.Source == "NuGet"), Is.True);
-        //    }
-        //}
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(references, Is.Not.Null);
+                Assert.That(references.Any(r => r.Name.StartsWith("Microsoft")), Is.True);
+                Assert.That(references.Any(r => r.Name.StartsWith("System")), Is.True);
+                Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("libman.json") == true), Is.True);
+                Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.csproj") == true), Is.True);
+                Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.False);
+                Assert.That(references.Any(r => r.Name == "System.Text.Json" && r.Source == "NuGet"), Is.True);
+            }
+        }
 
         [Test]
         public async Task TestLoadUsedReferencesWithFilter()
