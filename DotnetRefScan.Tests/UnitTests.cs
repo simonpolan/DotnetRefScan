@@ -1,3 +1,4 @@
+using DotnetRefScan.DefaultLicenseReferencesProviders;
 using NSubstitute;
 using System.Reflection;
 
@@ -23,7 +24,7 @@ namespace DotnetRefScan.Tests
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references.Any(r => r.Name.StartsWith("Microsoft")), Is.True);
@@ -33,7 +34,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.True);
                 Assert.That(references, Does.Contain(packageRefJson));
                 Assert.That(references, Does.Contain(packageRefCli));
-            });
+            }
         }
 
         [Test]
@@ -43,7 +44,7 @@ namespace DotnetRefScan.Tests
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references.Any(r => r.Name.StartsWith("Microsoft")), Is.True);
@@ -53,7 +54,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.True);
                 Assert.That(references, Does.Contain(packageRefJson));
                 Assert.That(references, Does.Contain(packageRefCli));
-            });
+            }
         }
 
         [Test]
@@ -65,13 +66,13 @@ namespace DotnetRefScan.Tests
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references.Any(r => r.Name.StartsWith("Microsoft")), Is.True);
                 Assert.That(references.Any(r => r.Name.StartsWith("System")), Is.True);
                 Assert.That(references.Contains(CustomReferenceProvider.FakePackage), Is.True);
-            });
+            }
         }
 
         [Test]
@@ -84,14 +85,14 @@ namespace DotnetRefScan.Tests
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(1));
                 Assert.That(references.Any(r => r.Name.StartsWith("Microsoft")), Is.False);
                 Assert.That(references.Any(r => r.Name.StartsWith("System")), Is.False);
                 Assert.That(references.Contains(CustomReferenceProvider.FakePackage), Is.True);
-            });
+            }
         }
 
         [Test]
@@ -101,7 +102,7 @@ namespace DotnetRefScan.Tests
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(4));
@@ -110,7 +111,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
                 Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
                 Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
-            });
+            }
         }
 
         [Test]
@@ -120,7 +121,7 @@ namespace DotnetRefScan.Tests
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(3));
@@ -129,7 +130,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
                 Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
                 Assert.That(references, Does.Not.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
-            });
+            }
         }
 
         [Test]
@@ -139,7 +140,7 @@ namespace DotnetRefScan.Tests
 
             ICollection<PackageReference> references = await refScan.LoadLicenseReferences(Path.Combine(testDataFolder, "TestLicense1.md"));
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(4));
@@ -147,7 +148,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr")));
                 Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
                 Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
-            });
+            }
         }
 
         [Test]
@@ -177,7 +178,7 @@ namespace DotnetRefScan.Tests
                 Console.WriteLine("------------------------------------------------------------");
             }
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(result, Is.Not.Null);
                 Assert.That(result.IsUpToDate, Is.True);
@@ -185,7 +186,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(result.LicensePackageReferences, Has.Count.GreaterThan(0));
                 Assert.That(result.MissingInLicense, Has.Count.Zero);
                 Assert.That(result.RedundantInLicense, Has.Count.Zero);
-            });
+            }
         }
 
         [Test]

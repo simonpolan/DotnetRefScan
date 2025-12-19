@@ -4,56 +4,56 @@
         <name>DotnetRefScan</name>
     </assembly>
     <members>
-        <member name="T:DotnetRefScan.MarkdownLicenseReferencesProvider">
+        <member name="T:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider">
             <summary>
             Library references provider for Markdown license files with references listed in a "|" separated table.
             The package reference values will be parsed from individual table columns by given column index.
             For example license file see the project's repository test files.
             </summary>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.#ctor(System.Int32,System.Int32,System.Int32,IMarkdownFormatter)">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.#ctor(System.Int32,System.Int32,System.Int32,IMarkdownFormatter)">
             <summary>
-            Initializes a new instance of the <see cref="T:DotnetRefScan.MarkdownLicenseReferencesProvider"/> class.
+            Initializes a new instance of the <see cref="T:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider"/> class.
             </summary>
             <param name="nameColumnIndex">Name column index.</param>
             <param name="versionColumnIndex">Version column index.</param>
             <param name="sourceColumnIndex">Source column index.</param>
             <param name="markdownFormatter">Markdown formatter implementation.</param>
         </member>
-        <member name="P:DotnetRefScan.MarkdownLicenseReferencesProvider.Name">
+        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.Name">
             <inheritdoc/>
         </member>
-        <member name="P:DotnetRefScan.MarkdownLicenseReferencesProvider.NameColumnIndex">
+        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.NameColumnIndex">
             <summary>
             Gets name column index.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.MarkdownLicenseReferencesProvider.VersionColumnIndex">
+        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.VersionColumnIndex">
             <summary>
             Gets version column index.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.MarkdownLicenseReferencesProvider.SourceColumnIndex">
+        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.SourceColumnIndex">
             <summary>
             Gets source column index.
             </summary>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.AddOrUpdateReference(System.String,DotnetRefScan.PackageReference,DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.AddOrUpdateReference(System.String,DotnetRefScan.PackageReference,DotnetRefScan.PackageReference)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.FormatLicense(System.String)">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.FormatLicense(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.LoadReferences(System.String)">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.LoadReferences(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.RemoveReference(System.String,DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.RemoveReference(System.String,DotnetRefScan.PackageReference)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.SortReferences(System.String)">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.SortReferences(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.IsReferenceRow(System.Collections.Generic.List{System.String},DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.IsReferenceRow(System.Collections.Generic.List{System.String},DotnetRefScan.PackageReference)">
             <summary>
             Gets a value indicating whether the row is related to the given package reference.
             </summary>
@@ -61,39 +61,39 @@
             <param name="reference">Package reference.</param>
             <returns><see langword="true"/> if matched. Otherwise <see langword="false"/>.</returns>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.UpdateReferenceRow(System.Collections.Generic.List{System.String},DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.UpdateReferenceRow(System.Collections.Generic.List{System.String},DotnetRefScan.PackageReference)">
             <summary>
             Updates the given Markdown table row with the new values for the given package reference.
             </summary>
             <param name="fields">Markdown table row fields.</param>
             <param name="reference">Package reference.</param>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.CreateReferenceRow(DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.CreateReferenceRow(DotnetRefScan.PackageReference)">
             <summary>
             Creates new Markdown table row string based on the values for the given package reference.
             </summary>
             <param name="reference">Package reference.</param>
         </member>
-        <member name="M:DotnetRefScan.MarkdownLicenseReferencesProvider.SaveToFile(System.String,System.Collections.Generic.List{System.String})">
+        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.SaveToFile(System.String,System.Collections.Generic.List{System.String})">
             <summary>
             Saves the given content to the given file.
             </summary>
             <param name="filePath">File path.</param>
             <param name="lines">Content lines to save to the file.</param>
         </member>
-        <member name="T:DotnetRefScan.CSharpProjectFileUsedReferencesProvider">
+        <member name="T:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider">
             <summary>
             Used references provider for NuGet packages defined in C# project files.
             It uses dotnet list package command to list all top level and transitive packages from the project file.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.CSharpProjectFileUsedReferencesProvider.Name">
+        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider.Name">
             <inheritdoc/>
         </member>
-        <member name="P:DotnetRefScan.CSharpProjectFileUsedReferencesProvider.FileSearchPattern">
+        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider.FileSearchPattern">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.CSharpProjectFileUsedReferencesProvider.LoadReferences(System.String)">
+        <member name="M:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider.LoadReferences(System.String)">
             <inheritdoc/>
         </member>
         <member name="T:DotnetRefScan.LibmanJsonUsedReferencesProvider">
@@ -388,7 +388,13 @@
             <param name="index">Field index to get.</param>
             <returns>Field value or empty string if not found.</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:IMarkdownFormatter.GetTableBodyIndexes(System.Collections.Generic.List{System.String})" -->
+        <member name="M:IMarkdownFormatter.GetTableBodyIndexes(System.Collections.Generic.List{System.String})">
+            <summary>
+            Gets From and To indexes indicating the table body indexes in the given list of Markdown document lines.
+            </summary>
+            <param name="lines">Markdown document lines</param>
+            <returns>From and To (exclusive) indexes of the Markdown table body if found. Otherwise <see langword="null"/>.</returns>
+        </member>
         <member name="T:MarkdownFormatter">
             <summary>
             Formats Markdown tables in a Markdown document so that

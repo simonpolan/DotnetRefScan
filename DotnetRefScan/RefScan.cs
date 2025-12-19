@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DotnetRefScan.DefaultLicenseReferencesProviders;
+using DotnetRefScan.DefaultUsedReferencesProviders;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

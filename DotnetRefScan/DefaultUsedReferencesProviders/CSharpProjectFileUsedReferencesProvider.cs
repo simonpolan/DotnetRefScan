@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DotnetRefScan
+namespace DotnetRefScan.DefaultUsedReferencesProviders
 {
     /// <summary>
     /// Used references provider for NuGet packages defined in C# project files.

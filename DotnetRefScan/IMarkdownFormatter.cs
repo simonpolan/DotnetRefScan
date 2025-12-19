@@ -47,6 +47,6 @@ public interface IMarkdownFormatter
     /// Gets From and To indexes indicating the table body indexes in the given list of Markdown document lines.
     /// </summary>
     /// <param name="lines">Markdown document lines</param>
-    /// <returns>From & To (exclusive) indexes of the Markdown table body if found. Otherwise <see langword="null"/>.</returns>
+    /// <returns>From and To (exclusive) indexes of the Markdown table body if found. Otherwise <see langword="null"/>.</returns>
     (int From, int To)? GetTableBodyIndexes(List<string> lines);
 }
