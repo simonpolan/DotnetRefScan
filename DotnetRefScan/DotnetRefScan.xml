@@ -96,18 +96,18 @@
         <member name="M:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider.LoadReferences(System.String)">
             <inheritdoc/>
         </member>
-        <member name="T:DotnetRefScan.LibmanJsonUsedReferencesProvider">
+        <member name="T:DotnetRefScan.DefaultUsedReferencesProviders.LibmanJsonUsedReferencesProvider">
             <summary>
             Used references provider for packages defined in libman json files.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.LibmanJsonUsedReferencesProvider.Name">
+        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.LibmanJsonUsedReferencesProvider.Name">
             <inheritdoc/>
         </member>
-        <member name="P:DotnetRefScan.LibmanJsonUsedReferencesProvider.FileSearchPattern">
+        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.LibmanJsonUsedReferencesProvider.FileSearchPattern">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.LibmanJsonUsedReferencesProvider.LoadReferences(System.String)">
+        <member name="M:DotnetRefScan.DefaultUsedReferencesProviders.LibmanJsonUsedReferencesProvider.LoadReferences(System.String)">
             <inheritdoc/>
         </member>
         <member name="T:DotnetRefScan.ILicenseReferencesProvider">

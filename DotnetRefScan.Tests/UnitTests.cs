@@ -8,8 +8,6 @@ namespace DotnetRefScan.Tests
     {
         private readonly string solutionRootFolder;
         private readonly string testDataFolder;
-        private readonly PackageReference packageRefJson = new("Newtonsoft.Json", "13.0.4", "NuGet");
-        private readonly PackageReference packageRefCli = new("CliWrap", "3.9.0", "NuGet");
 
         public Tests()
         {
@@ -32,8 +30,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("libman.json") == true), Is.True);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.csproj") == true), Is.True);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.True);
-                Assert.That(references, Does.Contain(packageRefJson));
-                Assert.That(references, Does.Contain(packageRefCli));
+                Assert.That(references.Any(r => r.Name == "CliWrap" && r.Source == "NuGet"), Is.True);
             }
         }
 
@@ -52,8 +49,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("libman.json") == true), Is.False);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.csproj") == true), Is.False);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.True);
-                Assert.That(references, Does.Contain(packageRefJson));
-                Assert.That(references, Does.Contain(packageRefCli));
+                Assert.That(references.Any(r => r.Name == "CliWrap" && r.Source == "NuGet"), Is.True);
             }
         }
 
@@ -154,9 +150,9 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task TestVerifyLicense()
         {
-            RefScan refScan = new(solutionRootFolder)
+            RefScan refScan = new(solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"))
             {
-                IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && !r.Name.StartsWith("NUnit") && !r.Name.StartsWith("NuGet") && r.Name != typeof(RefScan).Assembly.GetName().Name,
+                IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && r.Name != typeof(RefScan).Assembly.GetName().Name,
                 IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage"
             };
 
@@ -166,7 +162,7 @@ namespace DotnetRefScan.Tests
             {
                 Console.WriteLine("Missing references:");
                 foreach (var r in result.MissingInLicense)
-                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source}");
+                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} |");
                 Console.WriteLine("------------------------------------------------------------");
             }
 
@@ -174,7 +170,7 @@ namespace DotnetRefScan.Tests
             {
                 Console.WriteLine("Redundant references:");
                 foreach (var r in result.RedundantInLicense)
-                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source}");
+                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} |");
                 Console.WriteLine("------------------------------------------------------------");
             }
 
