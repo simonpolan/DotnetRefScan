@@ -31,30 +31,13 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
 
             string workingDirectory = Path.GetDirectoryName(fileName);
 
-            //var stdOutBuffer = new StringBuilder();
-            //await using var output = new MemoryStream();
-
-            //var result = await Cli
-            //    .Wrap("dotnet")
-            //    .WithArguments("list package --include-transitive --format json")
-            //    .WithWorkingDirectory(workingDirectory)
-            //    .WithStandardOutputPipe(PipeTarget.ToStream(output))
-            //    .ExecuteAsync()
-            //    .ConfigureAwait(false);
-
-            //output.Position = 0;
-            //using var reader = new StreamReader(output);
-            //string json = await reader.ReadToEndAsync().ConfigureAwait(false);
-
-            var result = await RunProcessAsync("dotnet", "list package --include-transitive --format json", workingDirectory);
-            if (result.ExitCode != 0 || !string.IsNullOrEmpty(result.StdErr) || string.IsNullOrEmpty(result.StdOut))
+            var (ExitCode, StdOut, StdErr) = await RunProcessAsync("dotnet", "list package --include-transitive --format json", workingDirectory);
+            if (ExitCode != 0 || !string.IsNullOrEmpty(StdErr) || string.IsNullOrEmpty(StdOut))
             {
-                throw new InvalidOperationException($"Dotnet command exited with code {result.ExitCode}. Details: {result.StdErr}.");
+                throw new InvalidOperationException($"Dotnet command exited with code {ExitCode}. Details: {StdErr}.");
             }
 
-            string json = result.StdOut;
-
-            PackageReferences? references = JsonSerializer.Deserialize<PackageReferences>(json);
+            PackageReferences? references = JsonSerializer.Deserialize<PackageReferences>(StdOut);
 
             if (references == null)
             {

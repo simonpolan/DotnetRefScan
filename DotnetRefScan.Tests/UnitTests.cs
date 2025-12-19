@@ -4,6 +4,7 @@ using System.Reflection;
 
 namespace DotnetRefScan.Tests
 {
+    [NonParallelizable]
     public class Tests
     {
         private readonly string solutionRootFolder;
@@ -30,7 +31,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("libman.json") == true), Is.True);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.csproj") == true), Is.True);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.True);
-                Assert.That(references.Any(r => r.Name == "CliWrap" && r.Source == "NuGet"), Is.True);
+                Assert.That(references.Any(r => r.Name == "System.Text.Json" && r.Source == "NuGet"), Is.True);
             }
         }
 
@@ -49,7 +50,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("libman.json") == true), Is.False);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.csproj") == true), Is.False);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.True);
-                Assert.That(references.Any(r => r.Name == "CliWrap" && r.Source == "NuGet"), Is.True);
+                Assert.That(references.Any(r => r.Name == "System.Text.Json" && r.Source == "NuGet"), Is.True);
             }
         }
 
