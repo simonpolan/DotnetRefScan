@@ -31,7 +31,7 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
 
             string workingDirectory = Path.GetDirectoryName(fileName);
 
-            var (ExitCode, StdOut, StdErr) = await RunProcessAsync("dotnet", "list package --include-transitive --format json", workingDirectory);
+            var (ExitCode, StdOut, StdErr) = await RunProcessAsync("dotnet", "list package --include-transitive --format json", workingDirectory).ConfigureAwait(false);
             if (ExitCode != 0 || !string.IsNullOrEmpty(StdErr) || string.IsNullOrEmpty(StdOut))
             {
                 throw new InvalidOperationException($"Dotnet command exited with code {ExitCode}. Details: {StdErr}.");
@@ -96,8 +96,8 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
 
             return (
                 process.ExitCode,
-                await stdoutTask,
-                await stderrTask
+                await stdoutTask.ConfigureAwait(false),
+                await stderrTask.ConfigureAwait(false)
             );
         }
 

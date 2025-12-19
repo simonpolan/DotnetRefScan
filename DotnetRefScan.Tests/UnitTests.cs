@@ -19,7 +19,7 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task TestLoadUsedReferences()
         {
-            RefScan refScan = new(solutionRootFolder);
+            RefScan refScan = new(solutionRootFolder, filter: p => !p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
@@ -30,7 +30,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(references.Any(r => r.Name.StartsWith("System")), Is.True);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("libman.json") == true), Is.True);
                 Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.csproj") == true), Is.True);
-                Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.True);
+                Assert.That(references.Any(r => r.DefinitionFileName?.EndsWith("DotnetRefScan.Tests.csproj") == true), Is.False);
                 Assert.That(references.Any(r => r.Name == "System.Text.Json" && r.Source == "NuGet"), Is.True);
             }
         }
