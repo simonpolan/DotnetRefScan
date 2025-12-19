@@ -27,11 +27,11 @@ RefScan refScan = new RefScan("e.g. Solution or Project folder");
 
 
 ### Verify your license
-You can simply let the library to compare your license agains source code and verify whether the license contains all used package references.
+You can simply let the library to compare your license against source code and verify whether the license contains all used package references.
 To do that, call:
 
 ```
-var license = await refScan.VerifyLicense("License file name");
+var result = await refScan.VerifyLicense("License file name");
 ```
 
 The returned object will show, whether the license file `IsUpToDate` and provides list of:
@@ -40,6 +40,13 @@ The returned object will show, whether the license file `IsUpToDate` and provide
 - Package references `MissingInLicense`
 - Package references `RedundantInLicense`
 
+### Update and format your license
+You can simply let the library to compare your license against source code and get the license file updated and formatted accordingly.
+To do that, call:
+
+```
+await refScan.UpdateLicense("License file name");
+```
 
 # Customization
 
@@ -110,7 +117,13 @@ var licensePackageReferences = await refScan.LoadLicenseReferences("License file
 
 ## Release notes
 
-### 2025-01-14 - 2.0.0
+### 2025-12-17 - 2.3.0
+The library now allows to get the license file automatically updated with the latest package versions and the license table to be automatically formatted.
+
+### 2025-12-17 - 2.2.0
+The library now allows to filter input files with the package references definition (e.g. .csproj) using a custom `Func<string, bool>` filter.
+
+### 2025-01-14 - 2.1.0
 The library now searches for only the latest version of a specific reference (if multiple versions used in the project) when verifying license.
 
 ### 2023/12/06 - 1.0.2

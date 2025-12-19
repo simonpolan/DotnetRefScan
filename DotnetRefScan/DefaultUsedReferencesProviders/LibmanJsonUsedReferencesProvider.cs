@@ -1,36 +1,37 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace DotnetRefScan
+namespace DotnetRefScan.DefaultUsedReferencesProviders
 {
     /// <summary>
     /// Used references provider for packages defined in libman json files.
     /// </summary>
-    public sealed class LibmanJsonUsedReferencesProvider : IUsedReferencesProvider
+    public class LibmanJsonUsedReferencesProvider : IUsedReferencesProvider
     {
         /// <inheritdoc/>
-        public string Name => nameof(LibmanJsonUsedReferencesProvider);
+        public virtual string Name => nameof(LibmanJsonUsedReferencesProvider);
 
         /// <inheritdoc/>
-        public string? FileSearchPattern => "libman.json";
+        public virtual string? FileSearchPattern => "libman.json";
 
         /// <inheritdoc/>
-        public async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
+        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
         {
             if (fileName == null)
             {
-                return await Task.FromResult(new List<UsedPackageReference>()).ConfigureAwait(false);
+                return new List<UsedPackageReference>();
             }
 
             using StreamReader sr = new StreamReader(fileName, Encoding.UTF8);
             string json = await sr.ReadToEndAsync().ConfigureAwait(false);
             sr.Close();
 
-            LibmanReferences? libmanReferences = JsonConvert.DeserializeObject<LibmanReferences>(json);
+            LibmanReferences? libmanReferences = JsonSerializer.Deserialize<LibmanReferences>(json);
 
             return libmanReferences?.Libraries
                     .Where(l => l.Name != null)
@@ -49,25 +50,25 @@ namespace DotnetRefScan
 
         private class LibmanReferences
         {
-            [JsonProperty("version")]
+            [JsonPropertyName("version")]
             public string? Version { get; set; }
 
-            [JsonProperty("defaultProvider")]
+            [JsonPropertyName("defaultProvider")]
             public string? DefaultProvider { get; set; }
 
-            [JsonProperty("libraries")]
+            [JsonPropertyName("libraries")]
             public List<Library>? Libraries { get; set; }
         }
 
         private class Library
         {
-            [JsonProperty("provider")]
+            [JsonPropertyName("provider")]
             public string? Provider { get; set; }
 
-            [JsonProperty("library")]
+            [JsonPropertyName("library")]
             public string? Name { get; set; }
 
-            [JsonProperty("destination")]
+            [JsonPropertyName("destination")]
             public string? Destination { get; set; }
         }
     }

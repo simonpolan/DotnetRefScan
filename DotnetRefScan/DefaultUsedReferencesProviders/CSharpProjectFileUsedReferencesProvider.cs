@@ -1,52 +1,47 @@
-﻿using CliWrap;
-using Newtonsoft.Json;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace DotnetRefScan
+namespace DotnetRefScan.DefaultUsedReferencesProviders
 {
     /// <summary>
     /// Used references provider for NuGet packages defined in C# project files.
     /// It uses dotnet list package command to list all top level and transitive packages from the project file.
     /// </summary>
-    public sealed class CSharpProjectFileUsedReferencesProvider : IUsedReferencesProvider
+    public class CSharpProjectFileUsedReferencesProvider : IUsedReferencesProvider
     {
         /// <inheritdoc/>
-        public string Name => nameof(CSharpProjectFileUsedReferencesProvider);
+        public virtual string Name => nameof(CSharpProjectFileUsedReferencesProvider);
 
         /// <inheritdoc/>
-        public string? FileSearchPattern => "*.csproj";
+        public virtual string? FileSearchPattern => "*.csproj";
 
         /// <inheritdoc/>
-        public async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
+        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
         {
             if (fileName == null)
             {
-                return await Task.FromResult(new List<UsedPackageReference>()).ConfigureAwait(false);
+                return new List<UsedPackageReference>();
             }
 
             string workingDirectory = Path.GetDirectoryName(fileName);
 
-            StringBuilder stdOutBuffer = new StringBuilder();
-            CommandResult result = await Cli
-                .Wrap("dotnet")
-                .WithArguments("list package --include-transitive --format json")
-                .WithWorkingDirectory(workingDirectory)
-                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
-                .WithValidation(CommandResultValidation.None)
-                .ExecuteAsync()
-                .ConfigureAwait(false);
+            var (ExitCode, StdOut, StdErr) = await RunProcessAsync("dotnet", "list package --include-transitive --format json", workingDirectory).ConfigureAwait(false);
+            if (ExitCode != 0 || !string.IsNullOrEmpty(StdErr) || string.IsNullOrEmpty(StdOut))
+            {
+                throw new InvalidOperationException($"Dotnet command exited with code {ExitCode}. Details: {StdErr}.");
+            }
 
-            string json = stdOutBuffer.ToString();
-
-            PackageReferences? references = JsonConvert.DeserializeObject<PackageReferences>(json);
+            PackageReferences? references = JsonSerializer.Deserialize<PackageReferences>(StdOut);
 
             if (references == null)
             {
-                return await Task.FromResult(new List<UsedPackageReference>()).ConfigureAwait(false);
+                return new List<UsedPackageReference>();
             }
 
             List<Package> topLevelPackages = references
@@ -72,48 +67,76 @@ namespace DotnetRefScan
                     p.ResolvedVersion!,
                     "NuGet",
                     Name,
-                    fileName))                
+                    fileName))
                 .ToList()
                 .DistinctAndSorted();
         }
 
+        private static async Task<(int ExitCode, string StdOut, string StdErr)> RunProcessAsync(string fileName, string arguments, string workingDirectory)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = fileName,
+                Arguments = arguments,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WorkingDirectory = workingDirectory,
+            };
+
+            using var process = new Process { StartInfo = psi };
+
+            process.Start();
+
+            Task<string> stdoutTask = process.StandardOutput.ReadToEndAsync();
+            Task<string> stderrTask = process.StandardError.ReadToEndAsync();
+
+            process.WaitForExit();
+
+            return (
+                process.ExitCode,
+                await stdoutTask.ConfigureAwait(false),
+                await stderrTask.ConfigureAwait(false)
+            );
+        }
 
         private class PackageReferences
         {
-            [JsonProperty("version")]
+            [JsonPropertyName("version")]
             public int Version { get; set; }
 
-            [JsonProperty("parameters")]
+            [JsonPropertyName("parameters")]
             public string? Parameters { get; set; }
 
-            [JsonProperty("projects")]
+            [JsonPropertyName("projects")]
             public Project[]? Projects { get; set; }
         }
 
         private class Project
         {
-            [JsonProperty("path")]
+            [JsonPropertyName("path")]
             public string? Path { get; set; }
 
-            [JsonProperty("frameworks")]
+            [JsonPropertyName("frameworks")]
             public Framework[]? Frameworks { get; set; }
         }
 
         private class Framework
         {
-            [JsonProperty("framework")]
+            [JsonPropertyName("framework")]
             public string? FrameworkName { get; set; }
 
-            [JsonProperty("topLevelPackages")]
+            [JsonPropertyName("topLevelPackages")]
             public Toplevelpackage[]? TopLevelPackages { get; set; }
 
-            [JsonProperty("transitivePackages")]
+            [JsonPropertyName("transitivePackages")]
             public Transitivepackage[]? TransitivePackages { get; set; }
         }
 
         private class Toplevelpackage : Package
         {
-            [JsonProperty("requestedVersion")]
+            [JsonPropertyName("requestedVersion")]
             public string? RequestedVersion { get; set; }
         }
 
@@ -122,10 +145,10 @@ namespace DotnetRefScan
 
         private class Package
         {
-            [JsonProperty("id")]
+            [JsonPropertyName("id")]
             public string? Id { get; set; }
 
-            [JsonProperty("resolvedVersion")]
+            [JsonPropertyName("resolvedVersion")]
             public string? ResolvedVersion { get; set; }
         }
     }
