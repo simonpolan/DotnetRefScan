@@ -16,25 +16,37 @@ namespace DotnetRefScan.Tests
             testDataFolder = Path.Combine(solutionRootFolder, Assembly.GetExecutingAssembly().GetName().Name!, "TestData");
         }
 
-        [Test]
-        public async Task TestLoadUsedReferences()
+        [OneTimeSetUp]
+        public async Task Setup()
         {
-            RefScan refScan = new(solutionRootFolder, filter: p => !p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
+            RefScan refScan = new(solutionRootFolder);
 
-            ICollection<UsedPackageReference> references = [];
             for (int i = 0; i < 3; i++)
             {
                 try
                 {
-                    references = await refScan.LoadUsedReferences();
+                    // This is needed to have the test succeed in CI - not clear why, but the first execution tends to fail on:
+                    // System.IO.IOException : Cannot assign requested address
+                    // ----> System.Net.Sockets.SocketException : Cannot assign requested address
+                    // Stack Trace:
+                    //    at System.IO.Pipes.PipeStream.ReadAsyncCore(Memory`1 destination, CancellationToken cancellationToken)
+                    _ = await refScan.LoadUsedReferences();
                     break;
                 }
                 catch
                 {
                     // Ignore
-                    await Task.Delay(1000);
+                    await Task.Delay(250);
                 }
             }
+        }
+
+        [Test]
+        public async Task TestLoadUsedReferences()
+        {
+            RefScan refScan = new(solutionRootFolder, filter: p => !p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
+
+            ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
             using (Assert.EnterMultipleScope())
             {
