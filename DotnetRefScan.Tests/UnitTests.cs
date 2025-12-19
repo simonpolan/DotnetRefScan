@@ -8,7 +8,7 @@ namespace DotnetRefScan.Tests
         private readonly string solutionRootFolder;
         private readonly string testDataFolder;
         private readonly PackageReference packageRefJson = new("Newtonsoft.Json", "13.0.4", "NuGet");
-        private readonly PackageReference packageRefCli = new("CliWrap", "3.10.0", "NuGet");
+        private readonly PackageReference packageRefCli = new("CliWrap", "3.9.0", "NuGet");
 
         public Tests()
         {
