@@ -1,9 +1,8 @@
-﻿using CliWrap;
-using CliWrap.Buffered;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -32,20 +31,28 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
 
             string workingDirectory = Path.GetDirectoryName(fileName);
 
-            var stdOutBuffer = new StringBuilder();
-            await using var output = new MemoryStream();
+            //var stdOutBuffer = new StringBuilder();
+            //await using var output = new MemoryStream();
 
-            var result = await Cli
-                .Wrap("dotnet")
-                .WithArguments("list package --include-transitive --format json")
-                .WithWorkingDirectory(workingDirectory)
-                .WithStandardOutputPipe(PipeTarget.ToStream(output))
-                .ExecuteAsync()
-                .ConfigureAwait(false);
+            //var result = await Cli
+            //    .Wrap("dotnet")
+            //    .WithArguments("list package --include-transitive --format json")
+            //    .WithWorkingDirectory(workingDirectory)
+            //    .WithStandardOutputPipe(PipeTarget.ToStream(output))
+            //    .ExecuteAsync()
+            //    .ConfigureAwait(false);
 
-            output.Position = 0;
-            using var reader = new StreamReader(output);
-            string json = await reader.ReadToEndAsync().ConfigureAwait(false);
+            //output.Position = 0;
+            //using var reader = new StreamReader(output);
+            //string json = await reader.ReadToEndAsync().ConfigureAwait(false);
+
+            var result = await RunProcessAsync("dotnet", "list package --include-transitive --format json", workingDirectory);
+            if (result.ExitCode != 0 || !string.IsNullOrEmpty(result.StdErr) || string.IsNullOrEmpty(result.StdOut))
+            {
+                throw new InvalidOperationException($"Dotnet command exited with code {result.ExitCode}. Details: {result.StdErr}.");
+            }
+
+            string json = result.StdOut;
 
             PackageReferences? references = JsonSerializer.Deserialize<PackageReferences>(json);
 
@@ -80,6 +87,35 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
                     fileName))
                 .ToList()
                 .DistinctAndSorted();
+        }
+
+        private static async Task<(int ExitCode, string StdOut, string StdErr)> RunProcessAsync(string fileName, string arguments, string workingDirectory)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = fileName,
+                Arguments = arguments,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WorkingDirectory = workingDirectory,
+            };
+
+            using var process = new Process { StartInfo = psi };
+
+            process.Start();
+
+            Task<string> stdoutTask = process.StandardOutput.ReadToEndAsync();
+            Task<string> stderrTask = process.StandardError.ReadToEndAsync();
+
+            process.WaitForExit();
+
+            return (
+                process.ExitCode,
+                await stdoutTask,
+                await stderrTask
+            );
         }
 
         private class PackageReferences
