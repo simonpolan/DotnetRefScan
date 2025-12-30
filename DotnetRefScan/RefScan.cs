@@ -23,11 +23,13 @@ namespace DotnetRefScan
         /// <param name="location">Scanned folder name.</param>
         /// <param name="searchOption">Search options.</param>
         /// <param name="filter">Package references file filter. Return <see langword="true"/> to include the file.</param>
-        public RefScan(string location, SearchOption searchOption = SearchOption.AllDirectories, Func<string, bool>? filter = null)
+        /// <param name="verifyPackageLicenses">A value indicating whether the package license info should be loaded and verified.</param>
+        public RefScan(string location, SearchOption searchOption = SearchOption.AllDirectories, Func<string, bool>? filter = null, bool verifyPackageLicenses = false)
         {
             _location = location;
             _searchOption = searchOption;
             _filter = filter;
+            VerifyPackageLicenses = verifyPackageLicenses;
         }
 
         /// <summary>
@@ -35,6 +37,11 @@ namespace DotnetRefScan
         /// The latest reference version will be taken based on <see cref="PackageReference.Source"/> and <see cref="PackageReference.Name"/>.
         /// </summary>
         public bool ConsiderOnlyLatestVersionsIfMultipleReferenced { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the package license info should be loaded and verified.
+        /// </summary>
+        public bool VerifyPackageLicenses { get; set; }
 
         /// <summary>
         /// Used references providers.
@@ -71,6 +78,7 @@ namespace DotnetRefScan
         public async Task<ICollection<UsedPackageReference>> LoadUsedReferences()
         {
             List<UsedPackageReference> references = new List<UsedPackageReference>();
+            var predicate = VerifyPackageLicenses ? IsReferenceRequiredInLicense : (_) => false;
 
             foreach (IUsedReferencesProvider provider in UsedReferencesProviders)
             {
@@ -82,12 +90,12 @@ namespace DotnetRefScan
 
                     foreach (string file in files)
                     {
-                        references.AddRange(await provider.LoadReferences(file).ConfigureAwait(false));
+                        references.AddRange(await provider.LoadReferences(file, predicate).ConfigureAwait(false));
                     }
                 }
                 else
                 {
-                    references.AddRange(await provider.LoadReferences(null).ConfigureAwait(false));
+                    references.AddRange(await provider.LoadReferences(null, predicate).ConfigureAwait(false));
                 }
             }
 

@@ -11,9 +11,10 @@
         /// <param name="name">Package name.</param>
         /// <param name="version">Package version</param>
         /// <param name="packageSource">Package source.</param>
+        /// <param name="license">Package license.</param>
         /// <param name="providerName">Reference provider name.</param>
         /// <param name="definitionFileName">Definition file name.</param>
-        public UsedPackageReference(string name, string version, string packageSource, string? providerName, string? definitionFileName) : base(name, version, packageSource)
+        public UsedPackageReference(string name, string version, string packageSource, PackageLicense? license, string? providerName, string? definitionFileName) : base(name, version, packageSource, license)
         {
             ProviderName = providerName;
             DefinitionFileName = definitionFileName;

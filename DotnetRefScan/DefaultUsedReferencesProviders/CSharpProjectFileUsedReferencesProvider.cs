@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotnetRefScan.DefaultPackageLicenseInfoProviders;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -22,7 +23,10 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
         public virtual string? FileSearchPattern => "*.csproj";
 
         /// <inheritdoc/>
-        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
+        public virtual IPackageLicenseInfoProvider? PackageLicenseInfoProvider { get; } = new NuGetPackageLicenseInfoProvider();
+
+        /// <inheritdoc/>
+        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName, Func<UsedPackageReference, bool>? shouldLoadLicense)
         {
             if (fileName == null)
             {
@@ -58,7 +62,7 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
                 .Cast<Package>()
                 .ToList();
 
-            return topLevelPackages
+            var packages = topLevelPackages
                 .Union(transitivePackages)
                 .Where(p => p.Id != null && p.ResolvedVersion != null)
                 .OrderBy(p => p.Id)
@@ -66,10 +70,28 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
                     p.Id!,
                     p.ResolvedVersion!,
                     "NuGet",
+                    null,
                     Name,
                     fileName))
                 .ToList()
-                .DistinctAndSorted();
+                .DistinctAndSorted()
+                .ToList();
+
+            if (PackageLicenseInfoProvider != null)
+            {
+                for (int i = 0; i < packages.Count; i++)
+                {
+                    var p = packages[i];
+
+                    if (shouldLoadLicense != null && !shouldLoadLicense(p))
+                        continue;
+
+                    var license = await PackageLicenseInfoProvider.TryGetLicense(p.Name, p.Version);
+                    packages[i] = new UsedPackageReference(p.Name, p.Version, p.Source, null, p.ProviderName, p.DefinitionFileName);
+                }
+            }
+
+            return packages;
         }
 
         private static async Task<(int ExitCode, string StdOut, string StdErr)> RunProcessAsync(string fileName, string arguments, string workingDirectory)

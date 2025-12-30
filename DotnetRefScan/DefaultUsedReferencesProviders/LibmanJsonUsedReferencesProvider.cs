@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,10 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
         public virtual string? FileSearchPattern => "libman.json";
 
         /// <inheritdoc/>
-        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
+        public IPackageLicenseInfoProvider? PackageLicenseInfoProvider => null;
+
+        /// <inheritdoc/>
+        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName, Func<UsedPackageReference, bool>? shouldLoadLicense)
         {
             if (fileName == null)
             {
@@ -39,6 +43,7 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
                         l.Name![..l.Name!.LastIndexOf('@')],
                         l.Name[(l.Name.LastIndexOf('@') + 1)..],
                         l.Provider ?? libmanReferences.DefaultProvider ?? "libman",
+                        null,
                         Name,
                         fileName))
                     .DistinctBy(p => $"{p.Name}@{p.Version}")

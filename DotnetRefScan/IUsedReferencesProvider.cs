@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DotnetRefScan
@@ -20,10 +21,16 @@ namespace DotnetRefScan
         string? FileSearchPattern { get; }
 
         /// <summary>
+        /// Gets package license info provider.
+        /// </summary>
+        IPackageLicenseInfoProvider? PackageLicenseInfoProvider { get; }
+
+        /// <summary>
         /// Loads used package references from the provided file.
         /// </summary>
         /// <param name="fileName">File to load the package references from.</param>
+        /// <param name="shouldLoadLicense">A predicate for license info loading - if <see langword="true"/>, the license info will be loaded for the given package.</param>
         /// <returns>Collection of used package references.</returns>
-        Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName);
+        Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName, Func<UsedPackageReference, bool>? shouldLoadLicense);
     }
 }

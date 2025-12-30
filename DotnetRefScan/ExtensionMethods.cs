@@ -82,5 +82,10 @@ namespace DotnetRefScan
         {
             return value => !predicate(value);
         }
+
+        public static string? TryGet(this List<string> list, int? index)
+        {
+            return index.HasValue && list.Count > index.Value ? list[index.Value].Trim() : null;
+        }
     }
 }

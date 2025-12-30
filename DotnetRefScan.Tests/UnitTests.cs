@@ -128,11 +128,11 @@ namespace DotnetRefScan.Tests
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(4));
-                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
+                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr", null)));
             }
         }
 
@@ -147,11 +147,11 @@ namespace DotnetRefScan.Tests
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(3));
-                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Not.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
+                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Not.Contain(new PackageReference("package3", "7.8.9", "jsdelivr", null)));
             }
         }
 
@@ -166,19 +166,19 @@ namespace DotnetRefScan.Tests
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(4));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr", null)));
             }
         }
 
         [Test]
         public async Task TestVerifyLicense()
         {
-            RefScan refScan = new(solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"))
+            RefScan refScan = new(solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"), verifyPackageLicenses: true)
             {
-                IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && r.Name != typeof(RefScan).Assembly.GetName().Name,
+                IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && r.Name != typeof(RefScan).Assembly.GetName().Name,
                 IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage"
             };
 
