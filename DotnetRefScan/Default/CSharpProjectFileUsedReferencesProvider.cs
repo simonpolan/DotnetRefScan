@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace DotnetRefScan.DefaultUsedReferencesProviders
+namespace DotnetRefScan.Default
 {
     /// <summary>
     /// Used references provider for NuGet packages defined in C# project files.
@@ -22,7 +22,10 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
         public virtual string? FileSearchPattern => "*.csproj";
 
         /// <inheritdoc/>
-        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName)
+        public virtual IPackageLicenseInfoProvider? PackageLicenseInfoProvider { get; } = new NuGetPackageLicenseInfoProvider();
+
+        /// <inheritdoc/>
+        public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName, Func<UsedPackageReference, bool>? shouldLoadLicense)
         {
             if (fileName == null)
             {
@@ -58,7 +61,7 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
                 .Cast<Package>()
                 .ToList();
 
-            return topLevelPackages
+            var packages = topLevelPackages
                 .Union(transitivePackages)
                 .Where(p => p.Id != null && p.ResolvedVersion != null)
                 .OrderBy(p => p.Id)
@@ -66,10 +69,16 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
                     p.Id!,
                     p.ResolvedVersion!,
                     "NuGet",
+                    null,
                     Name,
                     fileName))
                 .ToList()
-                .DistinctAndSorted();
+                .DistinctAndSorted()
+                .ToList();
+
+            await PackageLicenseInfoProvider.TryGetLicenses(packages, shouldLoadLicense).ConfigureAwait(false);
+
+            return packages;
         }
 
         private static async Task<(int ExitCode, string StdOut, string StdErr)> RunProcessAsync(string fileName, string arguments, string workingDirectory)

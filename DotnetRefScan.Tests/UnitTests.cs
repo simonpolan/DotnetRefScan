@@ -1,6 +1,7 @@
-using DotnetRefScan.DefaultLicenseReferencesProviders;
+using DotnetRefScan.Default;
 using NSubstitute;
 using System.Reflection;
+using System.Text;
 
 namespace DotnetRefScan.Tests
 {
@@ -128,11 +129,11 @@ namespace DotnetRefScan.Tests
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(4));
-                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
+                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr", null)));
             }
         }
 
@@ -147,11 +148,11 @@ namespace DotnetRefScan.Tests
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(3));
-                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Not.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
+                Assert.That(references, Does.Not.Contain(new PackageReference("package1", "1.2.1", "jsdelivr", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Not.Contain(new PackageReference("package3", "7.8.9", "jsdelivr", null)));
             }
         }
 
@@ -166,10 +167,10 @@ namespace DotnetRefScan.Tests
             {
                 Assert.That(references, Is.Not.Null);
                 Assert.That(references, Has.Count.EqualTo(4));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr")));
-                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs")));
-                Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr")));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "4.5.6", "cdnjs", null)));
+                Assert.That(references, Does.Contain(new PackageReference("package1", "1.2.3", "jsdelivr", new PackageLicense(string.Empty, "MIT", string.Empty))));
+                Assert.That(references, Does.Contain(new PackageReference("package2", "4.5.6", "cdnjs", new PackageLicense(string.Empty, "MIT", string.Empty))));
+                Assert.That(references, Does.Contain(new PackageReference("package3", "7.8.9", "jsdelivr", new PackageLicense("copyright", "MIT", "N/A"))));
             }
         }
 
@@ -182,13 +183,15 @@ namespace DotnetRefScan.Tests
                 IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage"
             };
 
-            LicenseVerificationResult result = await refScan.VerifyLicense(Path.Combine(testDataFolder, "TestLicense2.md"));
+            string licenseFileName = Path.Combine(testDataFolder, "TestLicense2.md");
+            await refScan.UpdateLicense(licenseFileName);
+            LicenseVerificationResult result = await refScan.VerifyLicense(licenseFileName);
 
             if (result.MissingInLicense.Count > 0)
             {
                 Console.WriteLine("Missing references:");
                 foreach (var r in result.MissingInLicense)
-                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} |");
+                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} | {r.License?.Copyright} | {r.License?.Type} | {r.License?.RepositoryUrl} |");
                 Console.WriteLine("------------------------------------------------------------");
             }
 
@@ -196,7 +199,15 @@ namespace DotnetRefScan.Tests
             {
                 Console.WriteLine("Redundant references:");
                 foreach (var r in result.RedundantInLicense)
-                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} |");
+                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} | {r.License?.Copyright} | {r.License?.Type} | {r.License?.RepositoryUrl} |");
+                Console.WriteLine("------------------------------------------------------------");
+            }
+
+            if (result.WithInvalidLicense.Count > 0)
+            {
+                Console.WriteLine("Invalid license info:");
+                foreach (var r in result.WithInvalidLicense)
+                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} | {r.License?.Copyright} | {r.License?.Type} | {r.License?.RepositoryUrl} |");
                 Console.WriteLine("------------------------------------------------------------");
             }
 
@@ -208,13 +219,14 @@ namespace DotnetRefScan.Tests
                 Assert.That(result.LicensePackageReferences, Has.Count.GreaterThan(0));
                 Assert.That(result.MissingInLicense, Has.Count.Zero);
                 Assert.That(result.RedundantInLicense, Has.Count.Zero);
+                Assert.That(result.WithInvalidLicense, Has.Count.Zero);
             }
         }
 
         [Test]
         public async Task TestUpdateLicense()
         {
-            string? output = licenseTextBeforeUpdate;
+            string? output = LicenseTextBeforeUpdate;
 
             var formatter = Substitute.ForPartsOf<MarkdownFormatter>();
             formatter.GetLines(Arg.Any<string>()).Returns(info => [.. output.Split(["\r\n", "\n", "\r"], StringSplitOptions.None)]);
@@ -222,27 +234,29 @@ namespace DotnetRefScan.Tests
             formatter.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<string>())).DoNotCallBase();
             formatter.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<string>())).Do(info => output = (string)info.Args()[1]);
 
-            var licenseProvider = Substitute.ForPartsOf<MarkdownLicenseReferencesProvider>(0, 1, 2, formatter);
+            var licenseProvider = Substitute.ForPartsOf<MarkdownLicenseReferencesProvider>(0, 1, 2, 3, 4, 5, true, formatter);
             licenseProvider.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<List<string>>())).DoNotCallBase();
             licenseProvider.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<List<string>>())).Do(info => output = string.Join(Environment.NewLine, (List<string>)info.Args()[1]).TrimEnd());
 
             RefScan refScan = new(solutionRootFolder)
             {
-                IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && !r.Name.StartsWith("NUnit") && !r.Source.StartsWith("NuGet") && r.Name != typeof(RefScan).Assembly.GetName().Name,
+                IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && !r.Name.StartsWith("NUnit") && (!r.Source.StartsWith("NuGet") || r.Name == "Newtonsoft.Json") && r.Name != typeof(RefScan).Assembly.GetName().Name,
                 IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage",
                 LicenseReferencesProvider = licenseProvider,
             };
 
             await refScan.UpdateLicense(Path.Combine(testDataFolder, "TestLicense1.md"));
 
-            Assert.That(output, Is.EqualTo(licenseTextAfterUpdate));
+            Assert.That(output, Is.EqualTo(LicenseTextAfterUpdate));
         }
 
-        private const string licenseTextBeforeUpdate = @"# DotnetRefScan license
+        private static string C => Encoding.UTF8.GetString([194, 169]);
+
+        private static string LicenseTextBeforeUpdate => @"# DotnetRefScan license
 
 License text...
 
-### Copyright (C) DotnetRefScan 2025.
+### Copyright (C) DotnetRefScan 2026.
 ### All rights reserved.
 ### Written by DotnetRefScan.
 
@@ -250,27 +264,29 @@ License text...
 
 | Library                           | Version | Source     | Copyright                         | License type            | License or project link         |
 |-----------------------------------|---------|------------|-----------------------------------|-------------------------|---------------------------------|
-| package1                          | 1.2.3   | jsdelivr   |                                   | MIT                     |                                 |
-| package2                          | 4.5.6   | cdnjs      |                                   | MIT                     |                                 |
+| package1                          | 1.2.3   | jsdelivr   | test                              | MIT                     |                                 |
+| package2                          | 4.5.6   | cdnjs      |                                   | MIT                     | http://test                     |
 | package3                          | 7.8.9   | jsdelivr   |                                   | MIT                     |                                 |
 
 *Additionally, .NET, Microsoft and System libraries are used*";
-        private const string licenseTextAfterUpdate = @"# DotnetRefScan license
+
+        private static string LicenseTextAfterUpdate => $@"# DotnetRefScan license
 
 License text...
 
-### Copyright (C) DotnetRefScan 2025.
+### Copyright (C) DotnetRefScan 2026.
 ### All rights reserved.
 ### Written by DotnetRefScan.
 
 **The solution uses following 3rd party libraries:**
 
-| Library  | Version | Source   | Copyright | License type | License or project link |
-| -------- | ------- | -------- | --------- | ------------ | ----------------------- |
-| package1 | 4.5.6   | cdnjs    |           |              |                         |
-| package2 | 4.5.6   | cdnjs    |           | MIT          |                         |
-| package1 | 1.2.3   | jsdelivr |           | MIT          |                         |
-| package3 | 7.8.9   | jsdelivr |           | MIT          |                         |
+| Library         | Version | Source   | Copyright                          | License type | License or project link                    |
+| --------------- | ------- | -------- | ---------------------------------- | ------------ | ------------------------------------------ |
+| package1        | 4.5.6   | cdnjs    |                                    |              |                                            |
+| package2        | 4.5.6   | cdnjs    |                                    | MIT          | http://test                                |
+| package1        | 1.2.3   | jsdelivr | test                               | MIT          |                                            |
+| package3        | 7.8.9   | jsdelivr |                                    | MIT          |                                            |
+| Newtonsoft.Json | 13.0.4  | NuGet    | Copyright {C} James Newton-King 2008 | MIT          | https://github.com/JamesNK/Newtonsoft.Json |
 
 *Additionally, .NET, Microsoft and System libraries are used*";
     }

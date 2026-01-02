@@ -7,19 +7,20 @@ namespace DotnetRefScan
     /// </summary>
     public class LicenseVerificationResult
     {
-        internal LicenseVerificationResult(ICollection<UsedPackageReference> usedPackageReferences, ICollection<PackageReference> licensePackageReferences, ICollection<UsedPackageReference> missingInLicense, ICollection<PackageReference> redundantInLicense)
+        internal LicenseVerificationResult(ICollection<UsedPackageReference> usedPackageReferences, ICollection<PackageReference> licensePackageReferences, ICollection<UsedPackageReference> missingInLicense, ICollection<PackageReference> redundantInLicense, ICollection<UsedPackageReference> withInvalidLicense)
         {
             UsedPackageReferences = usedPackageReferences ?? throw new System.ArgumentNullException(nameof(usedPackageReferences));
             LicensePackageReferences = licensePackageReferences ?? throw new System.ArgumentNullException(nameof(licensePackageReferences));
             MissingInLicense = missingInLicense ?? throw new System.ArgumentNullException(nameof(missingInLicense));
             RedundantInLicense = redundantInLicense ?? throw new System.ArgumentNullException(nameof(redundantInLicense));
+            WithInvalidLicense = withInvalidLicense ?? throw new System.ArgumentNullException(nameof(withInvalidLicense));
         }
 
         /// <summary>
         /// Gets a value indicating whether the license file is up to date.
         /// If true, the license file contains all expected package references.
         /// </summary>
-        public bool IsUpToDate => MissingInLicense.Count == 0 && RedundantInLicense.Count == 0;
+        public bool IsUpToDate => MissingInLicense.Count == 0 && RedundantInLicense.Count == 0 && WithInvalidLicense.Count == 0;
 
         /// <summary>
         /// Gets used package references.
@@ -40,5 +41,10 @@ namespace DotnetRefScan
         /// Gets package references which are redundant in the license file and should be therefore removed.
         /// </summary>
         public ICollection<PackageReference> RedundantInLicense { get; }
+
+        /// <summary>
+        /// Gets package references with invalid license information.
+        /// </summary>
+        public ICollection<UsedPackageReference> WithInvalidLicense { get; }
     }
 }

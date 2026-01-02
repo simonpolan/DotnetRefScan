@@ -14,11 +14,13 @@ namespace DotnetRefScan
         /// <param name="name">Package name.</param>
         /// <param name="version">Package version</param>
         /// <param name="packageSource">Package source.</param>
-        public PackageReference(string name, string version, string packageSource)
+        /// <param name="license">Package license.</param>
+        public PackageReference(string name, string version, string packageSource, PackageLicense? license)
         {
             Name = name;
             Version = version;
             Source = packageSource;
+            License = license;
         }
 
         /// <summary>
@@ -36,6 +38,11 @@ namespace DotnetRefScan
         /// </summary>
         public string Source { get; }
 
+        /// <summary>
+        /// Gets package license.
+        /// </summary>
+        public PackageLicense? License { get; }
+
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
@@ -48,13 +55,14 @@ namespace DotnetRefScan
             return !(other is null) &&
                    Name == other.Name &&
                    Version == other.Version &&
-                   Source == other.Source;
+                   Source == other.Source &&
+                   License == other.License;
         }
 
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Name, Version, Source);
+            return HashCode.Combine(Name, Version, Source, License);
         }
 
         /// <inheritdoc/>

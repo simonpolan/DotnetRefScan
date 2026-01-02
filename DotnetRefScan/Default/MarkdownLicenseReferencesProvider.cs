@@ -1,12 +1,11 @@
-﻿using DotnetRefScan.DefaultUsedReferencesProviders;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DotnetRefScan.DefaultLicenseReferencesProviders
+namespace DotnetRefScan.Default
 {
     /// <summary>
     /// Library references provider for Markdown license files with references listed in a "|" separated table.
@@ -23,12 +22,27 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
         /// <param name="nameColumnIndex">Name column index.</param>
         /// <param name="versionColumnIndex">Version column index.</param>
         /// <param name="sourceColumnIndex">Source column index.</param>
+        /// <param name="copyrightColumnIndex">Copyright column index.</param>
+        /// <param name="licenseColumnIndex">License column index.</param>
+        /// <param name="urlColumnIndex">URL column index.</param>
+        /// <param name="verifyLicenseInfo">Should license info be loaded and verified in the license file?</param>
         /// <param name="markdownFormatter">Markdown formatter implementation.</param>
-        public MarkdownLicenseReferencesProvider(int nameColumnIndex = 0, int versionColumnIndex = 1, int sourceColumnIndex = 2, IMarkdownFormatter? markdownFormatter = null)
+        public MarkdownLicenseReferencesProvider(int nameColumnIndex = 0,
+                                                 int versionColumnIndex = 1,
+                                                 int sourceColumnIndex = 2,
+                                                 int? copyrightColumnIndex = 3,
+                                                 int? licenseColumnIndex = 4,
+                                                 int? urlColumnIndex = 5,
+                                                 bool verifyLicenseInfo = true,
+                                                 IMarkdownFormatter? markdownFormatter = null)
         {
             NameColumnIndex = nameColumnIndex;
             VersionColumnIndex = versionColumnIndex;
             SourceColumnIndex = sourceColumnIndex;
+            CopyrightColumnIndex = copyrightColumnIndex;
+            LicenseColumnIndex = licenseColumnIndex;
+            UrlColumnIndex = urlColumnIndex;
+            VerifyLicenseInfo = verifyLicenseInfo;
             _markdownFormatter = markdownFormatter ?? new MarkdownFormatter();
         }
 
@@ -49,6 +63,26 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
         /// Gets source column index.
         /// </summary>
         public int SourceColumnIndex { get; }
+
+        /// <summary>
+        /// Gets copyright column index.
+        /// </summary>
+        public int? CopyrightColumnIndex { get; }
+
+        /// <summary>
+        /// Gets license column index.
+        /// </summary>
+        public int? LicenseColumnIndex { get; }
+
+        /// <summary>
+        /// Gets URL column index.
+        /// </summary>
+        public int? UrlColumnIndex { get; }
+
+        /// <summary>
+        /// Gets value indicating whether the package license infos should be loaded and verified in the license file.
+        /// </summary>
+        public bool VerifyLicenseInfo { get; }
 
         /// <inheritdoc/>
         public virtual Task AddOrUpdateReference(string licenseFileName, PackageReference? oldReference, PackageReference newReference)
@@ -94,7 +128,6 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
         /// <inheritdoc/>
         public virtual Task FormatLicense(string licenseFileName)
         {
-            // TODO: Add sort by Source and Name
             return _markdownFormatter.FormatTable(licenseFileName);
         }
 
@@ -112,7 +145,7 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
             for (int i = bodyIndexes.Value.From; i < bodyIndexes.Value.To; i++)
             {
                 List<string> packageInfo = _markdownFormatter.GetRowFields(lines[i]);
-                references.Add(new PackageReference(packageInfo[NameColumnIndex].Trim(), packageInfo[VersionColumnIndex].Trim(), packageInfo[SourceColumnIndex].Trim()));
+                references.Add(new PackageReference(packageInfo[NameColumnIndex].Trim(), packageInfo[VersionColumnIndex].Trim(), packageInfo[SourceColumnIndex].Trim(), GetLicenseInfo(packageInfo)));
             }
 
             return Task.FromResult(references
@@ -178,6 +211,25 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
         }
 
         /// <summary>
+        /// Gets package license info from the package info list.
+        /// </summary>
+        /// <param name="packageInfo">Package info list.</param>
+        /// <returns>Instance of <see cref="PackageLicense"/> if <see cref="VerifyLicenseInfo"/> set to <see langword="true"/>. Otherwise <see langword="null"/>.</returns>
+        internal protected virtual PackageLicense? GetLicenseInfo(List<string> packageInfo)
+        {
+            if (!VerifyLicenseInfo)
+                return null;
+
+            string? copyright = packageInfo.TryGet(CopyrightColumnIndex)?.Trim() ?? string.Empty;
+            string? type = packageInfo.TryGet(LicenseColumnIndex)?.Trim() ?? string.Empty;
+            string? url = packageInfo.TryGet(UrlColumnIndex)?.Trim() ?? string.Empty;
+
+            return !string.IsNullOrEmpty(copyright) || !string.IsNullOrEmpty(type) || !string.IsNullOrEmpty(url)
+                ? new PackageLicense(copyright, type, url)
+                : null;
+        }
+
+        /// <summary>
         /// Gets a value indicating whether the row is related to the given package reference.
         /// </summary>
         /// <param name="fields">Markdown table row fields.</param>
@@ -200,6 +252,16 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
         internal protected virtual void UpdateReferenceRow(List<string> fields, PackageReference reference)
         {
             fields[VersionColumnIndex] = reference.Version;
+
+            // Update license info only if new value is available
+            if (CopyrightColumnIndex.HasValue && !string.IsNullOrEmpty(reference.License?.Copyright))
+                fields[CopyrightColumnIndex.Value] = reference.License.Copyright;
+
+            if (LicenseColumnIndex.HasValue && !string.IsNullOrEmpty(reference.License?.Type))
+                fields[LicenseColumnIndex.Value] = reference.License.Type;
+
+            if (UrlColumnIndex.HasValue && !string.IsNullOrEmpty(reference.License?.RepositoryUrl))
+                fields[UrlColumnIndex.Value] = reference.License.RepositoryUrl;
         }
 
         /// <summary>
@@ -208,11 +270,27 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
         /// <param name="reference">Package reference.</param>
         internal protected virtual string CreateReferenceRow(PackageReference reference)
         {
-            List<string> fields = new List<string>(new int[] { NameColumnIndex, VersionColumnIndex, SourceColumnIndex }.Max() + 1);
+            List<string> fields = new List<string>(new int[] {
+                NameColumnIndex,
+                VersionColumnIndex,
+                SourceColumnIndex,
+                CopyrightColumnIndex ?? -1,
+                LicenseColumnIndex ?? -1,
+                UrlColumnIndex ?? -1
+            }.Max() + 1);
 
             fields.Insert(NameColumnIndex, reference.Name);
             fields.Insert(VersionColumnIndex, reference.Version);
             fields.Insert(SourceColumnIndex, reference.Source);
+
+            if (CopyrightColumnIndex.HasValue)
+                fields.Insert(CopyrightColumnIndex.Value, reference.License?.Copyright ?? string.Empty);
+
+            if (LicenseColumnIndex.HasValue)
+                fields.Insert(LicenseColumnIndex.Value, reference.License?.Type ?? string.Empty);
+
+            if (UrlColumnIndex.HasValue)
+                fields.Insert(UrlColumnIndex.Value, reference.License?.RepositoryUrl ?? string.Empty);
 
             return _markdownFormatter.GetRowString(fields);
         }
