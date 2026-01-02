@@ -250,7 +250,7 @@ namespace DotnetRefScan.Tests
             Assert.That(output, Is.EqualTo(LicenseTextAfterUpdate));
         }
 
-        private static byte[] CopyrightBytes => "©"u8.ToArray();
+        private static byte[] CopyrightBytes => [194, 169];
 
         private static string CopyrightSymbol => Encoding.UTF8.GetString(CopyrightBytes, 0, CopyrightBytes.Length);
 
