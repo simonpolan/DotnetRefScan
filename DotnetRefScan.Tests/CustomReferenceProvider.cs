@@ -1,5 +1,4 @@
-﻿
-namespace DotnetRefScan.Tests
+﻿namespace DotnetRefScan.Tests
 {
     internal class CustomReferenceProvider : IUsedReferencesProvider
     {
