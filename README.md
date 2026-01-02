@@ -26,7 +26,7 @@ RefScan refScan = new RefScan("e.g. Solution or Project folder");
     - Configures the library to either search for references only in the current folder or its subfolders as well
   - `filter`
     - Configures a Regex pattern for file filtering
-  - `verifyPackageLicenses`
+  - `verifyLicenseInfo`
     - Configures whether the package license info (copyright / license type / repository URL) should be verified and updated
 
 
@@ -130,7 +130,7 @@ var licensePackageReferences = await refScan.LoadLicenseReferences("License file
 
 ## Release notes
 
-### 2026-01-02 - 3.0.0
+### 2026-01-02 - 3.0.2
 The library now allows to read license information for NuGet packages from NuGet API (copyright, license type, project url) and use this information for license verification and updates.
 
 ### 2025-12-17 - 2.3.0

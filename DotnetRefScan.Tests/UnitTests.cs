@@ -43,7 +43,7 @@ namespace DotnetRefScan.Tests
         }
 
         [Test]
-        public async Task TestLoadUsedReferences()
+        public async Task LoadUsedReferences()
         {
             RefScan refScan = new(solutionRootFolder, filter: p => !p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
 
@@ -62,7 +62,7 @@ namespace DotnetRefScan.Tests
         }
 
         [Test]
-        public async Task TestLoadUsedReferencesWithFilter()
+        public async Task LoadUsedReferencesWithFilter()
         {
             RefScan refScan = new(solutionRootFolder, filter: p => p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
 
@@ -81,7 +81,7 @@ namespace DotnetRefScan.Tests
         }
 
         [Test]
-        public async Task TestLoadUsedReferencesWithCustomProvider()
+        public async Task LoadUsedReferencesWithCustomProvider()
         {
             RefScan refScan = new(solutionRootFolder);
 
@@ -99,7 +99,7 @@ namespace DotnetRefScan.Tests
         }
 
         [Test]
-        public async Task TestLoadUsedReferencesWithCustomProviderOnly()
+        public async Task LoadUsedReferencesWithCustomProviderOnly()
         {
             RefScan refScan = new(solutionRootFolder);
 
@@ -119,7 +119,7 @@ namespace DotnetRefScan.Tests
         }
 
         [Test]
-        public async Task TestLoadUsedReferencesFromAllSubfolders()
+        public async Task LoadUsedReferencesFromAllSubfolders()
         {
             RefScan refScan = new(testDataFolder);
 
@@ -138,7 +138,7 @@ namespace DotnetRefScan.Tests
         }
 
         [Test]
-        public async Task TestLoadUsedReferencesFromCurrentFolderOnly()
+        public async Task LoadUsedReferencesFromCurrentFolderOnly()
         {
             RefScan refScan = new(testDataFolder, SearchOption.TopDirectoryOnly);
 
@@ -157,7 +157,7 @@ namespace DotnetRefScan.Tests
         }
 
         [Test]
-        public async Task TestLoadLicenseReferences()
+        public async Task LoadLicenseReferences()
         {
             RefScan refScan = new(testDataFolder);
 
@@ -175,48 +175,23 @@ namespace DotnetRefScan.Tests
         }
 
         [Test]
-        public async Task TestVerifyLicense()
+        public async Task VerifyLicense_IgnoreLicenseInfo()
         {
-            RefScan refScan = new(solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"))
+            RefScan refScan = new(solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"), verifyLicenseInfo: false)
             {
                 IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && r.Name != typeof(RefScan).Assembly.GetName().Name,
                 IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage"
             };
 
             string licenseFileName = Path.Combine(testDataFolder, "TestLicense2.md");
-            await refScan.UpdateLicense(licenseFileName);
             LicenseVerificationResult result = await refScan.VerifyLicense(licenseFileName);
-
-            if (result.MissingInLicense.Count > 0)
-            {
-                Console.WriteLine("Missing references:");
-                foreach (var r in result.MissingInLicense)
-                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} | {r.License?.Copyright} | {r.License?.Type} | {r.License?.RepositoryUrl} |");
-                Console.WriteLine("------------------------------------------------------------");
-            }
-
-            if (result.RedundantInLicense.Count > 0)
-            {
-                Console.WriteLine("Redundant references:");
-                foreach (var r in result.RedundantInLicense)
-                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} | {r.License?.Copyright} | {r.License?.Type} | {r.License?.RepositoryUrl} |");
-                Console.WriteLine("------------------------------------------------------------");
-            }
-
-            if (result.WithInvalidLicense.Count > 0)
-            {
-                Console.WriteLine("Invalid license info:");
-                foreach (var r in result.WithInvalidLicense)
-                    Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} | {r.License?.Copyright} | {r.License?.Type} | {r.License?.RepositoryUrl} |");
-                Console.WriteLine("------------------------------------------------------------");
-            }
 
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(result, Is.Not.Null);
                 Assert.That(result.IsUpToDate, Is.True);
                 Assert.That(result.UsedPackageReferences, Has.Count.GreaterThan(0));
-                Assert.That(result.LicensePackageReferences, Has.Count.GreaterThan(0));
+                Assert.That(result.LicensePackageReferences, Has.Count.EqualTo(5));
                 Assert.That(result.MissingInLicense, Has.Count.Zero);
                 Assert.That(result.RedundantInLicense, Has.Count.Zero);
                 Assert.That(result.WithInvalidLicense, Has.Count.Zero);
@@ -224,7 +199,32 @@ namespace DotnetRefScan.Tests
         }
 
         [Test]
-        public async Task TestUpdateLicense()
+        public async Task VerifyLicense_CheckLicenseInfo()
+        {
+            RefScan refScan = new(solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"))
+            {
+                IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && r.Name != typeof(RefScan).Assembly.GetName().Name,
+                IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage"
+            };
+
+            string licenseFileName = Path.Combine(testDataFolder, "TestLicense3.md");
+            LicenseVerificationResult result = await refScan.VerifyLicense(licenseFileName);
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(result.IsUpToDate, Is.False);
+                Assert.That(result.UsedPackageReferences, Has.Count.GreaterThan(0));
+                Assert.That(result.LicensePackageReferences, Has.Count.EqualTo(5));
+                Assert.That(result.MissingInLicense, Has.Count.Zero);
+                Assert.That(result.RedundantInLicense, Has.Count.Zero);
+                Assert.That(result.WithInvalidLicense, Has.Count.EqualTo(1));
+                Assert.That(result.WithInvalidLicense.FirstOrDefault(), Is.EqualTo(new PackageReference("package1", "4.5.6", "cdnjs", null)));
+            }
+        }
+
+        [Test]
+        public async Task UpdateLicense()
         {
             string? output = LicenseTextBeforeUpdate;
 
@@ -256,7 +256,7 @@ namespace DotnetRefScan.Tests
 
 License text...
 
-### Copyright (C) DotnetRefScan 2026.
+### Copyright (C) DotnetRefScan.
 ### All rights reserved.
 ### Written by DotnetRefScan.
 
@@ -274,7 +274,7 @@ License text...
 
 License text...
 
-### Copyright (C) DotnetRefScan 2026.
+### Copyright (C) DotnetRefScan.
 ### All rights reserved.
 ### Written by DotnetRefScan.
 
