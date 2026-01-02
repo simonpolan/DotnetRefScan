@@ -1,12 +1,11 @@
-﻿using DotnetRefScan.DefaultUsedReferencesProviders;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DotnetRefScan.DefaultLicenseReferencesProviders
+namespace DotnetRefScan.Default
 {
     /// <summary>
     /// Library references provider for Markdown license files with references listed in a "|" separated table.

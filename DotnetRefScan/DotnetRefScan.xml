@@ -4,16 +4,51 @@
         <name>DotnetRefScan</name>
     </assembly>
     <members>
-        <member name="T:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider">
+        <member name="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider">
+            <summary>
+            Used references provider for NuGet packages defined in C# project files.
+            It uses dotnet list package command to list all top level and transitive packages from the project file.
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.FileSearchPattern">
+            <inheritdoc/>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.PackageLicenseInfoProvider">
+            <inheritdoc/>
+        </member>
+        <member name="M:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.LoadReferences(System.String,System.Func{DotnetRefScan.UsedPackageReference,System.Boolean})">
+            <inheritdoc/>
+        </member>
+        <member name="T:DotnetRefScan.Default.LibmanJsonUsedReferencesProvider">
+            <summary>
+            Used references provider for packages defined in libman json files.
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.Default.LibmanJsonUsedReferencesProvider.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:DotnetRefScan.Default.LibmanJsonUsedReferencesProvider.FileSearchPattern">
+            <inheritdoc/>
+        </member>
+        <member name="P:DotnetRefScan.Default.LibmanJsonUsedReferencesProvider.PackageLicenseInfoProvider">
+            <inheritdoc/>
+        </member>
+        <member name="M:DotnetRefScan.Default.LibmanJsonUsedReferencesProvider.LoadReferences(System.String,System.Func{DotnetRefScan.UsedPackageReference,System.Boolean})">
+            <inheritdoc/>
+        </member>
+        <member name="T:DotnetRefScan.Default.MarkdownLicenseReferencesProvider">
             <summary>
             Library references provider for Markdown license files with references listed in a "|" separated table.
             The package reference values will be parsed from individual table columns by given column index.
             For example license file see the project's repository test files.
             </summary>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.#ctor(System.Int32,System.Int32,System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Boolean,IMarkdownFormatter)">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.#ctor(System.Int32,System.Int32,System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Boolean,IMarkdownFormatter)">
             <summary>
-            Initializes a new instance of the <see cref="T:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider"/> class.
+            Initializes a new instance of the <see cref="T:DotnetRefScan.Default.MarkdownLicenseReferencesProvider"/> class.
             </summary>
             <param name="nameColumnIndex">Name column index.</param>
             <param name="versionColumnIndex">Version column index.</param>
@@ -24,67 +59,67 @@
             <param name="verifyLicenseInfo">Should license info be loaded and verified in the license file?</param>
             <param name="markdownFormatter">Markdown formatter implementation.</param>
         </member>
-        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.Name">
+        <member name="P:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.Name">
             <inheritdoc/>
         </member>
-        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.NameColumnIndex">
+        <member name="P:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.NameColumnIndex">
             <summary>
             Gets name column index.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.VersionColumnIndex">
+        <member name="P:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.VersionColumnIndex">
             <summary>
             Gets version column index.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.SourceColumnIndex">
+        <member name="P:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.SourceColumnIndex">
             <summary>
             Gets source column index.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.CopyrightColumnIndex">
+        <member name="P:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.CopyrightColumnIndex">
             <summary>
             Gets copyright column index.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.LicenseColumnIndex">
+        <member name="P:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.LicenseColumnIndex">
             <summary>
             Gets license column index.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.UrlColumnIndex">
+        <member name="P:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.UrlColumnIndex">
             <summary>
             Gets URL column index.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.VerifyLicenseInfo">
+        <member name="P:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.VerifyLicenseInfo">
             <summary>
             Gets value indicating whether the package license infos should be loaded and verified in the license file.
             </summary>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.AddOrUpdateReference(System.String,DotnetRefScan.PackageReference,DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.AddOrUpdateReference(System.String,DotnetRefScan.PackageReference,DotnetRefScan.PackageReference)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.FormatLicense(System.String)">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.FormatLicense(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.LoadReferences(System.String)">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.LoadReferences(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.RemoveReference(System.String,DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.RemoveReference(System.String,DotnetRefScan.PackageReference)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.SortReferences(System.String)">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.SortReferences(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.GetLicenseInfo(System.Collections.Generic.List{System.String})">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.GetLicenseInfo(System.Collections.Generic.List{System.String})">
             <summary>
             Gets package license info from the package info list.
             </summary>
             <param name="packageInfo">Package info list.</param>
-            <returns>Instance of <see cref="T:DotnetRefScan.PackageLicense"/> if <see cref="P:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.VerifyLicenseInfo"/> set to <see langword="true"/>. Otherwise <see langword="null"/>.</returns>
+            <returns>Instance of <see cref="T:DotnetRefScan.PackageLicense"/> if <see cref="P:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.VerifyLicenseInfo"/> set to <see langword="true"/>. Otherwise <see langword="null"/>.</returns>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.IsReferenceRow(System.Collections.Generic.List{System.String},DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.IsReferenceRow(System.Collections.Generic.List{System.String},DotnetRefScan.PackageReference)">
             <summary>
             Gets a value indicating whether the row is related to the given package reference.
             </summary>
@@ -92,38 +127,38 @@
             <param name="reference">Package reference.</param>
             <returns><see langword="true"/> if matched. Otherwise <see langword="false"/>.</returns>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.UpdateReferenceRow(System.Collections.Generic.List{System.String},DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.UpdateReferenceRow(System.Collections.Generic.List{System.String},DotnetRefScan.PackageReference)">
             <summary>
             Updates the given Markdown table row with the new values for the given package reference.
             </summary>
             <param name="fields">Markdown table row fields.</param>
             <param name="reference">Package reference.</param>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.CreateReferenceRow(DotnetRefScan.PackageReference)">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.CreateReferenceRow(DotnetRefScan.PackageReference)">
             <summary>
             Creates new Markdown table row string based on the values for the given package reference.
             </summary>
             <param name="reference">Package reference.</param>
         </member>
-        <member name="M:DotnetRefScan.DefaultLicenseReferencesProviders.MarkdownLicenseReferencesProvider.SaveToFile(System.String,System.Collections.Generic.List{System.String})">
+        <member name="M:DotnetRefScan.Default.MarkdownLicenseReferencesProvider.SaveToFile(System.String,System.Collections.Generic.List{System.String})">
             <summary>
             Saves the given content to the given file.
             </summary>
             <param name="filePath">File path.</param>
             <param name="lines">Content lines to save to the file.</param>
         </member>
-        <member name="T:DotnetRefScan.DefaultPackageLicenseInfoProviders.NuGetPackageLicenseInfoProvider">
+        <member name="T:DotnetRefScan.Default.NuGetPackageLicenseInfoProvider">
             <summary>
             NuGet package license info provider.
             </summary>
         </member>
-        <member name="M:DotnetRefScan.DefaultPackageLicenseInfoProviders.NuGetPackageLicenseInfoProvider.#ctor(System.String)">
+        <member name="M:DotnetRefScan.Default.NuGetPackageLicenseInfoProvider.#ctor(System.String)">
             <summary>
-            Initiates new instance of <see cref="T:DotnetRefScan.DefaultPackageLicenseInfoProviders.NuGetPackageLicenseInfoProvider"/>.
+            Initiates new instance of <see cref="T:DotnetRefScan.Default.NuGetPackageLicenseInfoProvider"/>.
             </summary>
             <param name="feedBaseUrl">NuGet feed base URL.</param>
         </member>
-        <member name="M:DotnetRefScan.DefaultPackageLicenseInfoProviders.NuGetPackageLicenseInfoProvider.TryGetLicense(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:DotnetRefScan.Default.NuGetPackageLicenseInfoProvider.TryGetLicense(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Tries to load license info for the given package via NuGet v3-flatcontainer API.
             </summary>
@@ -131,41 +166,6 @@
             <param name="packageVersion">Package version (optional).</param>
             <param name="cancellationToken">Cancellation token.</param>
             <returns>Instance of <see cref="T:DotnetRefScan.PackageLicense"/> of found. Otherwise <see langword="null"/>.</returns>
-        </member>
-        <member name="T:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider">
-            <summary>
-            Used references provider for NuGet packages defined in C# project files.
-            It uses dotnet list package command to list all top level and transitive packages from the project file.
-            </summary>
-        </member>
-        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider.FileSearchPattern">
-            <inheritdoc/>
-        </member>
-        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider.PackageLicenseInfoProvider">
-            <inheritdoc/>
-        </member>
-        <member name="M:DotnetRefScan.DefaultUsedReferencesProviders.CSharpProjectFileUsedReferencesProvider.LoadReferences(System.String,System.Func{DotnetRefScan.UsedPackageReference,System.Boolean})">
-            <inheritdoc/>
-        </member>
-        <member name="T:DotnetRefScan.DefaultUsedReferencesProviders.LibmanJsonUsedReferencesProvider">
-            <summary>
-            Used references provider for packages defined in libman json files.
-            </summary>
-        </member>
-        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.LibmanJsonUsedReferencesProvider.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.LibmanJsonUsedReferencesProvider.FileSearchPattern">
-            <inheritdoc/>
-        </member>
-        <member name="P:DotnetRefScan.DefaultUsedReferencesProviders.LibmanJsonUsedReferencesProvider.PackageLicenseInfoProvider">
-            <inheritdoc/>
-        </member>
-        <member name="M:DotnetRefScan.DefaultUsedReferencesProviders.LibmanJsonUsedReferencesProvider.LoadReferences(System.String,System.Func{DotnetRefScan.UsedPackageReference,System.Boolean})">
-            <inheritdoc/>
         </member>
         <member name="T:DotnetRefScan.ILicenseReferencesProvider">
             <summary>

@@ -1,4 +1,4 @@
-using DotnetRefScan.DefaultLicenseReferencesProviders;
+using DotnetRefScan.Default;
 using NSubstitute;
 using System.Reflection;
 

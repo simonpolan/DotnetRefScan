@@ -1,5 +1,4 @@
-﻿using DotnetRefScan.DefaultLicenseReferencesProviders;
-using DotnetRefScan.DefaultUsedReferencesProviders;
+﻿using DotnetRefScan.Default;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -171,24 +170,24 @@ namespace DotnetRefScan
             // Update references
             foreach (var (oldReference, newReference) in updatedReferences)
             {
-                await LicenseReferencesProvider.AddOrUpdateReference(licenseFileName, oldReference, newReference);
+                await LicenseReferencesProvider.AddOrUpdateReference(licenseFileName, oldReference, newReference).ConfigureAwait(false);
             }
 
             // Add new references
             foreach (var reference in missingInLicense)
             {
-                await LicenseReferencesProvider.AddOrUpdateReference(licenseFileName, null, reference);
+                await LicenseReferencesProvider.AddOrUpdateReference(licenseFileName, null, reference).ConfigureAwait(false);
             }
 
             // Remove references
             foreach (var reference in redundantInLicense)
             {
-                await LicenseReferencesProvider.RemoveReference(licenseFileName, reference);
+                await LicenseReferencesProvider.RemoveReference(licenseFileName, reference).ConfigureAwait(false);
             }
 
             // Format
-            await LicenseReferencesProvider.FormatLicense(licenseFileName);
-            await LicenseReferencesProvider.SortReferences(licenseFileName);
+            await LicenseReferencesProvider.FormatLicense(licenseFileName).ConfigureAwait(false);
+            await LicenseReferencesProvider.SortReferences(licenseFileName).ConfigureAwait(false);
         }
 
         private bool IsFileAllowed(string path)

@@ -1,5 +1,4 @@
-﻿using DotnetRefScan.DefaultPackageLicenseInfoProviders;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,7 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace DotnetRefScan.DefaultUsedReferencesProviders
+namespace DotnetRefScan.Default
 {
     /// <summary>
     /// Used references provider for NuGet packages defined in C# project files.
@@ -87,7 +86,7 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
                     if (shouldLoadLicense != null && !shouldLoadLicense(p))
                         continue;
 
-                    var license = await PackageLicenseInfoProvider.TryGetLicense(p.Name, p.Version);
+                    var license = await PackageLicenseInfoProvider.TryGetLicense(p.Name, p.Version).ConfigureAwait(false);
                     packages[i] = new UsedPackageReference(p.Name, p.Version, p.Source, license, p.ProviderName, p.DefinitionFileName);
                 }
             }

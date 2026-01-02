@@ -10,12 +10,12 @@
 
         public IPackageLicenseInfoProvider? PackageLicenseInfoProvider => null;
 
-        public async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName, Func<UsedPackageReference, bool>? shouldLoadLicense)
+        public Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName, Func<UsedPackageReference, bool>? shouldLoadLicense)
         {
-            return await Task.FromResult(new List<UsedPackageReference>()
-            {
+            return Task.FromResult((ICollection<UsedPackageReference>)
+            [
                 FakePackage
-            }).ConfigureAwait(false);
+            ]);
         }
     }
 }

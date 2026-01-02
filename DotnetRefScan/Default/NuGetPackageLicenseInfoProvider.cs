@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace DotnetRefScan.DefaultPackageLicenseInfoProviders
+namespace DotnetRefScan.Default
 {
     /// <summary>
     /// NuGet package license info provider.
@@ -22,7 +23,7 @@ namespace DotnetRefScan.DefaultPackageLicenseInfoProviders
         {
             _httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(feedBaseUrl)
+                BaseAddress = new Uri(feedBaseUrl),
             };
         }
 
@@ -44,7 +45,13 @@ namespace DotnetRefScan.DefaultPackageLicenseInfoProviders
                     throw new ArgumentException(nameof(packageVersion));
 
                 var idLower = packageId.ToLowerInvariant();
-                var xml = await _httpClient.GetStringAsync($"/v3-flatcontainer/{idLower}/{packageVersion}/{idLower}.nuspec");
+
+                using HttpResponseMessage response = await _httpClient.GetAsync($"/v3-flatcontainer/{idLower}/{packageVersion}/{idLower}.nuspec").ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                    return null;
+
+                var byteArray = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                var xml = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
 
                 var doc = new XmlDocument();
                 doc.LoadXml(xml);

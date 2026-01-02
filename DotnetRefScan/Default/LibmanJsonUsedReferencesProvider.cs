@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace DotnetRefScan.DefaultUsedReferencesProviders
+namespace DotnetRefScan.Default
 {
     /// <summary>
     /// Used references provider for packages defined in libman json files.
