@@ -7,13 +7,13 @@ namespace DotnetRefScan
     /// </summary>
     public class LicenseVerificationResult
     {
-        internal LicenseVerificationResult(ICollection<UsedPackageReference> usedPackageReferences, ICollection<PackageReference> licensePackageReferences, ICollection<UsedPackageReference> missingInLicense, ICollection<PackageReference> redundantInLicense, ICollection<UsedPackageReference> packagesWithInvalidLicense)
+        internal LicenseVerificationResult(ICollection<UsedPackageReference> usedPackageReferences, ICollection<PackageReference> licensePackageReferences, ICollection<UsedPackageReference> missingInLicense, ICollection<PackageReference> redundantInLicense, ICollection<UsedPackageReference> withInvalidLicense)
         {
             UsedPackageReferences = usedPackageReferences ?? throw new System.ArgumentNullException(nameof(usedPackageReferences));
             LicensePackageReferences = licensePackageReferences ?? throw new System.ArgumentNullException(nameof(licensePackageReferences));
             MissingInLicense = missingInLicense ?? throw new System.ArgumentNullException(nameof(missingInLicense));
             RedundantInLicense = redundantInLicense ?? throw new System.ArgumentNullException(nameof(redundantInLicense));
-            WithInvalidLicense = packagesWithInvalidLicense ?? throw new System.ArgumentNullException(nameof(packagesWithInvalidLicense));
+            WithInvalidLicense = withInvalidLicense ?? throw new System.ArgumentNullException(nameof(withInvalidLicense));
         }
 
         /// <summary>
