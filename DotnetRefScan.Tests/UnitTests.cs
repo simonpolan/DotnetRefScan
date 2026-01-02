@@ -1,6 +1,7 @@
 using DotnetRefScan.Default;
 using NSubstitute;
 using System.Reflection;
+using System.Text;
 
 namespace DotnetRefScan.Tests
 {
@@ -225,7 +226,7 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task TestUpdateLicense()
         {
-            string? output = licenseTextBeforeUpdate;
+            string? output = LicenseTextBeforeUpdate;
 
             var formatter = Substitute.ForPartsOf<MarkdownFormatter>();
             formatter.GetLines(Arg.Any<string>()).Returns(info => [.. output.Split(["\r\n", "\n", "\r"], StringSplitOptions.None)]);
@@ -246,10 +247,14 @@ namespace DotnetRefScan.Tests
 
             await refScan.UpdateLicense(Path.Combine(testDataFolder, "TestLicense1.md"));
 
-            Assert.That(output, Is.EqualTo(licenseTextAfterUpdate));
+            Assert.That(output, Is.EqualTo(LicenseTextAfterUpdate));
         }
 
-        private const string licenseTextBeforeUpdate = @"# DotnetRefScan license
+        private static byte[] CopyrightBytes => "©"u8.ToArray();
+
+        private static string CopyrightSymbol => Encoding.UTF8.GetString(CopyrightBytes, 0, CopyrightBytes.Length);
+
+        private static string LicenseTextBeforeUpdate => @"# DotnetRefScan license
 
 License text...
 
@@ -266,7 +271,8 @@ License text...
 | package3                          | 7.8.9   | jsdelivr   |                                   | MIT                     |                                 |
 
 *Additionally, .NET, Microsoft and System libraries are used*";
-        private const string licenseTextAfterUpdate = @"# DotnetRefScan license
+
+        private static string LicenseTextAfterUpdate => $@"# DotnetRefScan license
 
 License text...
 
@@ -282,7 +288,7 @@ License text...
 | package2        | 4.5.6   | cdnjs    |                                    | MIT          | http://test                                |
 | package1        | 1.2.3   | jsdelivr | test                               | MIT          |                                            |
 | package3        | 7.8.9   | jsdelivr |                                    | MIT          |                                            |
-| Newtonsoft.Json | 13.0.4  | NuGet    | Copyright © James Newton-King 2008 | MIT          | https://github.com/JamesNK/Newtonsoft.Json |
+| Newtonsoft.Json | 13.0.4  | NuGet    | Copyright {CopyrightSymbol} James Newton-King 2008 | MIT          | https://github.com/JamesNK/Newtonsoft.Json |
 
 *Additionally, .NET, Microsoft and System libraries are used*";
     }
