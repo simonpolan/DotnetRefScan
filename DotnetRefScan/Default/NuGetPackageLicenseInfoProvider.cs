@@ -67,6 +67,15 @@ namespace DotnetRefScan.Default
                     .Attributes?["url"]?
                     .Value;
 
+                // Fallback to projectUrl
+                if (string.IsNullOrEmpty(repositoryUrl))
+                {
+                    repositoryUrl = doc
+                        .SelectSingleNode("//ns:projectUrl", nsmgr)?
+                        .InnerText?
+                        .Trim();
+                }
+
                 // Copyright
                 string? copyright = doc
                     .SelectSingleNode("//ns:copyright", nsmgr)?
