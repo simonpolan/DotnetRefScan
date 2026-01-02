@@ -3,6 +3,8 @@ Reference scanner for Dotnet applications.
 
 It loads used package references from your source code and package references from your license file and compares them to ensure your license file contains all used package references.
 
+It supports automatic formatting of the Markdown license file (sorting, table layout adjustments) and can automatically also update & add package references to the license file including their license information (copyright / license type / repository URL).
+
 [![PR Build and Test](https://github.com/simonpolan/DotnetRefScan/actions/workflows/pr-build-and-test.yml/badge.svg)](https://github.com/simonpolan/DotnetRefScan/actions/workflows/pr-build-and-test.yml)
 
 ## Usage
@@ -24,6 +26,8 @@ RefScan refScan = new RefScan("e.g. Solution or Project folder");
     - Configures the library to either search for references only in the current folder or its subfolders as well
   - `filter`
     - Configures a Regex pattern for file filtering
+  - `verifyPackageLicenses`
+    - Configures whether the package license info (copyright / license type / repository URL) should be verified and updated
 
 
 ### Verify your license
@@ -39,6 +43,7 @@ The returned object will show, whether the license file `IsUpToDate` and provide
 - `LicensePackageReferences`
 - Package references `MissingInLicense`
 - Package references `RedundantInLicense`
+- Package references `WithInvalidLicense`
 
 ### Update and format your license
 You can simply let the library to compare your license against source code and get the license file updated and formatted accordingly.
@@ -67,9 +72,13 @@ It expects the license file to have table-based package definition with "|" symb
 
 You can replace the default provider with your custom or re-configure the default provider by calling:
 ```
-refScan.LicenseReferencesProvider = new MarkdownLicenseReferencesProvider(x, y, z);
+refScan.LicenseReferencesProvider = new MarkdownLicenseReferencesProvider(a, b, c, d, e, f, verifyLicenseInfo: true, markdownFormatter: new MarkdownFormatter());
 ```
-Where `x`, `y` and `z` specify column indexes of your license file table, which contain the package reference **name**, **version** and **source**.
+Where:
+  - `a`, `b`, `c`, `d`, `e`, `f` specify column indexes of your license file table, which contain the package reference **name**, **version** and **source**, **copyright**, **license type**, **repository url**.
+    - **copyright**, **license type** and **repository url** indexes are optional.
+  - `verifyLicenseInfo` specified whether to load the **copyright**, **license type** and **repository url** columns from the license file during the license verification.
+  - `markdownFormatter` specifies Markdown file formatter. If not provided, the default `MarkdownFormatter` will be used.
 
 
 ### Filtering the package references
@@ -116,6 +125,9 @@ var licensePackageReferences = await refScan.LoadLicenseReferences("License file
 ---
 
 ## Release notes
+
+### 2026-01-02 - 3.0.0
+The library now allows to read license information for NuGet packages from NuGet API (copyright, license type, project url) and use this information for license verification and updates.
 
 ### 2025-12-17 - 2.3.0
 The library now allows to get the license file automatically updated with the latest package versions and the license table to be automatically formatted.

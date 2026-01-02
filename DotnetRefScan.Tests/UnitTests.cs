@@ -202,10 +202,10 @@ namespace DotnetRefScan.Tests
                 Console.WriteLine("------------------------------------------------------------");
             }
 
-            if (result.PackagesWithInvalidLicense.Count > 0)
+            if (result.WithInvalidLicense.Count > 0)
             {
                 Console.WriteLine("Invalid license info:");
-                foreach (var r in result.PackagesWithInvalidLicense)
+                foreach (var r in result.WithInvalidLicense)
                     Console.WriteLine($"\t| {r.Name} | {r.Version} | {r.Source} | {r.License?.Copyright} | {r.License?.Type} | {r.License?.RepositoryUrl} |");
                 Console.WriteLine("------------------------------------------------------------");
             }
@@ -218,7 +218,7 @@ namespace DotnetRefScan.Tests
                 Assert.That(result.LicensePackageReferences, Has.Count.GreaterThan(0));
                 Assert.That(result.MissingInLicense, Has.Count.Zero);
                 Assert.That(result.RedundantInLicense, Has.Count.Zero);
-                Assert.That(result.PackagesWithInvalidLicense, Has.Count.Zero);
+                Assert.That(result.WithInvalidLicense, Has.Count.Zero);
             }
         }
 

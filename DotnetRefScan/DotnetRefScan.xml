@@ -285,7 +285,7 @@
             Gets package references which are redundant in the license file and should be therefore removed.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.LicenseVerificationResult.PackagesWithInvalidLicense">
+        <member name="P:DotnetRefScan.LicenseVerificationResult.WithInvalidLicense">
             <summary>
             Gets package references with invalid license information.
             </summary>
