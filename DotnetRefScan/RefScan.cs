@@ -167,7 +167,7 @@ namespace DotnetRefScan
             ICollection<UsedPackageReference> usedPackageReferences = await LoadUsedReferences().ConfigureAwait(false);
             ICollection<PackageReference> licensePackageReferences = await LoadLicenseReferences(licenseFileName).ConfigureAwait(false);
 
-            ICollection<(PackageReference OldReference, UsedPackageReference NewReference)> updatedReferences = usedPackageReferences.Where(r => IsReferenceRequiredInLicense(r) && licensePackageReferences.Any(lr => lr.Name == r.Name && lr.Source == r.Source) && !licensePackageReferences.Any(lr => lr == r)).Cast<UsedPackageReference>().Select(r => (licensePackageReferences.First(lr => lr.Name == r.Name && lr.Source == r.Source), r)).ToList();
+            ICollection<(PackageReference OldReference, UsedPackageReference NewReference)> updatedReferences = usedPackageReferences.Where(r => IsReferenceRequiredInLicense(r) && licensePackageReferences.Any(lr => lr.Name == r.Name && lr.Source == r.Source) && !licensePackageReferences.Any(lr => Matches(lr, r))).Cast<UsedPackageReference>().Select(r => (licensePackageReferences.First(lr => lr.Name == r.Name && lr.Source == r.Source), r)).ToList();
 
             ICollection<UsedPackageReference> missingInLicense = usedPackageReferences.Where(r => IsReferenceRequiredInLicense(r) && !licensePackageReferences.Any(lr => lr.Name == r.Name && lr.Source == r.Source)).Cast<UsedPackageReference>().ToList();
 
