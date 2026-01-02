@@ -257,7 +257,7 @@ namespace DotnetRefScan.Default
             if (VerifyLicenseInfo && reference.License != null)
             {
                 if (CopyrightColumnIndex.HasValue)
-                    fields[CopyrightColumnIndex.Value] = reference.License.Copyright;
+                    fields[CopyrightColumnIndex.Value] = reference.License.CopyrightOrAuthors;
 
                 if (LicenseColumnIndex.HasValue)
                     fields[LicenseColumnIndex.Value] = reference.License.Type;
@@ -289,7 +289,7 @@ namespace DotnetRefScan.Default
             if (VerifyLicenseInfo && reference.License != null)
             {
                 if (CopyrightColumnIndex.HasValue)
-                    fields.Insert(CopyrightColumnIndex.Value, reference.License.Copyright);
+                    fields.Insert(CopyrightColumnIndex.Value, reference.License.CopyrightOrAuthors);
 
                 if (LicenseColumnIndex.HasValue)
                     fields.Insert(LicenseColumnIndex.Value, reference.License.Type);

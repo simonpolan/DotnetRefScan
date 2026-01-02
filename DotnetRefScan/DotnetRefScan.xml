@@ -290,6 +290,12 @@
             Gets package references with invalid license information.
             </summary>
         </member>
+        <member name="P:DotnetRefScan.LicenseVerificationResult.WithIncompleteLicenseInformation">
+            <summary>
+            Gets used package references with incomplete license information.
+            For these packages, not all license information values could be loaded, therefore you should verify it manually.
+            </summary>
+        </member>
         <member name="T:DotnetRefScan.PackageLicense">
             <summary>
             Package license model.
@@ -299,13 +305,13 @@
             <summary>
             Initializes a new instance of the <see cref="T:DotnetRefScan.PackageLicense"/> class.
             </summary>
-            <param name="copyright">Package copyright.</param>
+            <param name="copyrightOrAuthors">Package copyright / authors.</param>
             <param name="type">Package license type.</param>
             <param name="url">Package repository URL.</param>
         </member>
-        <member name="P:DotnetRefScan.PackageLicense.Copyright">
+        <member name="P:DotnetRefScan.PackageLicense.CopyrightOrAuthors">
             <summary>
-            Gets package copyright.
+            Gets package copyright / authors.
             </summary>
         </member>
         <member name="P:DotnetRefScan.PackageLicense.Type">
@@ -318,9 +324,9 @@
             Gets package repository URL.
             </summary>
         </member>
-        <member name="M:DotnetRefScan.PackageLicense.IsValid">
+        <member name="M:DotnetRefScan.PackageLicense.IsProvided">
             <summary>
-            Gets a value indicating whether the package license is valid (non-empty).
+            Gets a value indicating whether the package license is provided (non-empty).
             </summary>
             <returns><see langword="true"/> if valid.</returns>
         </member>

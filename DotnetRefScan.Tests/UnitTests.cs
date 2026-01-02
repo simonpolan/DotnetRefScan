@@ -262,11 +262,11 @@ License text...
 
 **The solution uses following 3rd party libraries:**
 
-| Library                           | Version | Source     | Copyright                         | License type            | License or project link         |
-|-----------------------------------|---------|------------|-----------------------------------|-------------------------|---------------------------------|
-| package1                          | 1.2.3   | jsdelivr   | test                              | MIT                     |                                 |
-| package2                          | 4.5.6   | cdnjs      |                                   | MIT                     | http://test                     |
-| package3                          | 7.8.8   | jsdelivr   |                                   | MIT                     |                                 |
+| Library                           | Version | Source     | Copyright / Authors | License type            | License or project link         |
+|-----------------------------------|---------|------------|---------------------|-------------------------|---------------------------------|
+| package1                          | 1.2.3   | jsdelivr   | test                | MIT                     |                                 |
+| package2                          | 4.5.6   | cdnjs      |                     | MIT                     | http://test                     |
+| package3                          | 7.8.8   | jsdelivr   |                     | MIT                     |                                 |
 
 *Additionally, .NET, Microsoft and System libraries are used*";
 
@@ -280,7 +280,7 @@ License text...
 
 **The solution uses following 3rd party libraries:**
 
-| Library         | Version | Source   | Copyright                          | License type | License or project link                    |
+| Library         | Version | Source   | Copyright / Authors                | License type | License or project link                    |
 | --------------- | ------- | -------- | ---------------------------------- | ------------ | ------------------------------------------ |
 | package1        | 4.5.6   | cdnjs    |                                    |              |                                            |
 | package2        | 4.5.6   | cdnjs    |                                    | MIT          | http://test                                |
