@@ -13,7 +13,7 @@ namespace DotnetRefScan.Default
     /// </summary>
     public class NuGetPackageLicenseInfoProvider : IPackageLicenseInfoProvider
     {
-        private readonly HttpClient _httpClient;
+        private readonly string _feedBaseUrl;
 
         /// <summary>
         /// Initiates new instance of <see cref="NuGetPackageLicenseInfoProvider"/>.
@@ -21,10 +21,7 @@ namespace DotnetRefScan.Default
         /// <param name="feedBaseUrl">NuGet feed base URL.</param>
         public NuGetPackageLicenseInfoProvider(string feedBaseUrl = "https://api.nuget.org/")
         {
-            _httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri(feedBaseUrl),
-            };
+            _feedBaseUrl = feedBaseUrl;
         }
 
         /// <summary>
@@ -45,6 +42,11 @@ namespace DotnetRefScan.Default
                     throw new ArgumentException(nameof(packageVersion));
 
                 var idLower = packageId.ToLowerInvariant();
+
+                using var _httpClient = new HttpClient()
+                {
+                    BaseAddress = new Uri(_feedBaseUrl),
+                };
 
                 using HttpResponseMessage response = await _httpClient.GetAsync($"/v3-flatcontainer/{idLower}/{packageVersion}/{idLower}.nuspec").ConfigureAwait(false);
                 if (!response.IsSuccessStatusCode)
