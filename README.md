@@ -55,7 +55,7 @@ await refScan.UpdateLicense("License file name");
 
 # Customization
 
-### UsedReferencesProviders
+### Used References Providers
 
 You can modify the list of `UsedReferencesProviders` in order to add new or remove default providers which scan the source code for used package references.
 
@@ -63,8 +63,13 @@ The default provides scan:
 - C# project files (*.csproj) for NuGet packages
 - Libman files (libman.json) for front-end packages from jsdeliver, cdnjs etc.
 
+#### Package License Info Provider
 
-### LicenseReferencesProvider
+`IPackageLicenseInfoProvider` is responsible for loading package license information. For example `NuGetPackageLicenseInfoProvider` loads NuGet package information from NuGet feed API.
+
+Each `IUsedReferencesProvider` can have its own `IPackageLicenseInfoProvider`. If you find the default providers not suitable for your needs, you can provide your own implementation easily.
+
+### License References Provider
 
 The default `LicenseReferencesProvider` reads package references mentioned in the license file using Markdown format.
 
@@ -79,7 +84,6 @@ Where:
     - **copyright**, **license type** and **repository url** indexes are optional.
   - `verifyLicenseInfo` specified whether to load the **copyright**, **license type** and **repository url** columns from the license file during the license verification.
   - `markdownFormatter` specifies Markdown file formatter. If not provided, the default `MarkdownFormatter` will be used.
-
 
 ### Filtering the package references
 

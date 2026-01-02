@@ -250,9 +250,7 @@ namespace DotnetRefScan.Tests
             Assert.That(output, Is.EqualTo(LicenseTextAfterUpdate));
         }
 
-        private static byte[] CopyrightBytes => [194, 169];
-
-        private static string CopyrightSymbol => Encoding.UTF8.GetString(CopyrightBytes, 0, CopyrightBytes.Length);
+        private static string C => Encoding.UTF8.GetString([194, 169]);
 
         private static string LicenseTextBeforeUpdate => @"# DotnetRefScan license
 
@@ -288,7 +286,7 @@ License text...
 | package2        | 4.5.6   | cdnjs    |                                    | MIT          | http://test                                |
 | package1        | 1.2.3   | jsdelivr | test                               | MIT          |                                            |
 | package3        | 7.8.9   | jsdelivr |                                    | MIT          |                                            |
-| Newtonsoft.Json | 13.0.4  | NuGet    | Copyright {CopyrightSymbol} James Newton-King 2008 | MIT          | https://github.com/JamesNK/Newtonsoft.Json |
+| Newtonsoft.Json | 13.0.4  | NuGet    | Copyright {C} James Newton-King 2008 | MIT          | https://github.com/JamesNK/Newtonsoft.Json |
 
 *Additionally, .NET, Microsoft and System libraries are used*";
     }
