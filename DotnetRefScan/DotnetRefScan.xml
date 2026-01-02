@@ -318,6 +318,12 @@
             Gets package repository URL.
             </summary>
         </member>
+        <member name="M:DotnetRefScan.PackageLicense.IsValid">
+            <summary>
+            Gets a value indicating whether the package license is valid (non-empty).
+            </summary>
+            <returns><see langword="true"/> if valid.</returns>
+        </member>
         <member name="M:DotnetRefScan.PackageLicense.Equals(System.Object)">
             <inheritdoc/>
         </member>
@@ -394,7 +400,7 @@
             <param name="location">Scanned folder name.</param>
             <param name="searchOption">Search options.</param>
             <param name="filter">Package references file filter. Return <see langword="true"/> to include the file.</param>
-            <param name="verifyPackageLicenses">A value indicating whether the package license info should be loaded and verified.</param>
+            <param name="verifyLicenseInfo">A value indicating whether the package license info should be loaded and verified.</param>
         </member>
         <member name="P:DotnetRefScan.RefScan.ConsiderOnlyLatestVersionsIfMultipleReferenced">
             <summary>
@@ -402,7 +408,7 @@
             The latest reference version will be taken based on <see cref="P:DotnetRefScan.PackageReference.Source"/> and <see cref="P:DotnetRefScan.PackageReference.Name"/>.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.RefScan.VerifyPackageLicenses">
+        <member name="P:DotnetRefScan.RefScan.VerifyLicenseInfo">
             <summary>
             Gets or sets a value indicating whether the package license info should be loaded and verified.
             </summary>

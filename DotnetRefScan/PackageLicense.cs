@@ -36,6 +36,15 @@ namespace DotnetRefScan
         /// </summary>
         public string RepositoryUrl { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether the package license is valid (non-empty).
+        /// </summary>
+        /// <returns><see langword="true"/> if valid.</returns>
+        public bool IsValid()
+        {
+            return !string.IsNullOrWhiteSpace(Copyright) && !string.IsNullOrWhiteSpace(Type) && !string.IsNullOrWhiteSpace(RepositoryUrl);
+        }
+
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {

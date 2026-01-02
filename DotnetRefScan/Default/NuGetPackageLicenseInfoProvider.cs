@@ -88,15 +88,6 @@ namespace DotnetRefScan.Default
                     .InnerText?
                     .Trim();
 
-                // Fallback to legacy licenseUrl
-                if (string.IsNullOrEmpty(license))
-                {
-                    license = doc
-                        .SelectSingleNode("//ns:licenseUrl", nsmgr)?
-                        .InnerText?
-                        .Trim();
-                }
-
                 return new PackageLicense(copyright ?? string.Empty,
                                           license ?? string.Empty,
                                           repositoryUrl ?? string.Empty);

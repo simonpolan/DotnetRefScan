@@ -253,15 +253,18 @@ namespace DotnetRefScan.Default
         {
             fields[VersionColumnIndex] = reference.Version;
 
-            // Update license info only if new value is available
-            if (CopyrightColumnIndex.HasValue && !string.IsNullOrEmpty(reference.License?.Copyright))
-                fields[CopyrightColumnIndex.Value] = reference.License.Copyright;
+            // Update license info only if new info is available, but it empty strings provided, update the license to signalize license change
+            if (VerifyLicenseInfo && reference.License != null)
+            {
+                if (CopyrightColumnIndex.HasValue)
+                    fields[CopyrightColumnIndex.Value] = reference.License.Copyright;
 
-            if (LicenseColumnIndex.HasValue && !string.IsNullOrEmpty(reference.License?.Type))
-                fields[LicenseColumnIndex.Value] = reference.License.Type;
+                if (LicenseColumnIndex.HasValue)
+                    fields[LicenseColumnIndex.Value] = reference.License.Type;
 
-            if (UrlColumnIndex.HasValue && !string.IsNullOrEmpty(reference.License?.RepositoryUrl))
-                fields[UrlColumnIndex.Value] = reference.License.RepositoryUrl;
+                if (UrlColumnIndex.HasValue)
+                    fields[UrlColumnIndex.Value] = reference.License.RepositoryUrl;
+            }
         }
 
         /// <summary>
@@ -283,14 +286,17 @@ namespace DotnetRefScan.Default
             fields.Insert(VersionColumnIndex, reference.Version);
             fields.Insert(SourceColumnIndex, reference.Source);
 
-            if (CopyrightColumnIndex.HasValue)
-                fields.Insert(CopyrightColumnIndex.Value, reference.License?.Copyright ?? string.Empty);
+            if (VerifyLicenseInfo && reference.License != null)
+            {
+                if (CopyrightColumnIndex.HasValue)
+                    fields.Insert(CopyrightColumnIndex.Value, reference.License.Copyright);
 
-            if (LicenseColumnIndex.HasValue)
-                fields.Insert(LicenseColumnIndex.Value, reference.License?.Type ?? string.Empty);
+                if (LicenseColumnIndex.HasValue)
+                    fields.Insert(LicenseColumnIndex.Value, reference.License.Type);
 
-            if (UrlColumnIndex.HasValue)
-                fields.Insert(UrlColumnIndex.Value, reference.License?.RepositoryUrl ?? string.Empty);
+                if (UrlColumnIndex.HasValue)
+                    fields.Insert(UrlColumnIndex.Value, reference.License.RepositoryUrl);
+            }
 
             return _markdownFormatter.GetRowString(fields);
         }
