@@ -7,13 +7,14 @@ namespace DotnetRefScan
     /// </summary>
     public class LicenseVerificationResult
     {
-        internal LicenseVerificationResult(ICollection<UsedPackageReference> usedPackageReferences, ICollection<PackageReference> licensePackageReferences, ICollection<UsedPackageReference> missingInLicense, ICollection<PackageReference> redundantInLicense, ICollection<UsedPackageReference> withInvalidLicense)
+        internal LicenseVerificationResult(ICollection<UsedPackageReference> usedPackageReferences, ICollection<PackageReference> licensePackageReferences, ICollection<UsedPackageReference> missingInLicense, ICollection<PackageReference> redundantInLicense, ICollection<PackageReference> withInvalidLicense, ICollection<UsedPackageReference> withIncompleteLicenseInformation)
         {
             UsedPackageReferences = usedPackageReferences ?? throw new System.ArgumentNullException(nameof(usedPackageReferences));
             LicensePackageReferences = licensePackageReferences ?? throw new System.ArgumentNullException(nameof(licensePackageReferences));
             MissingInLicense = missingInLicense ?? throw new System.ArgumentNullException(nameof(missingInLicense));
             RedundantInLicense = redundantInLicense ?? throw new System.ArgumentNullException(nameof(redundantInLicense));
             WithInvalidLicense = withInvalidLicense ?? throw new System.ArgumentNullException(nameof(withInvalidLicense));
+            WithIncompleteLicenseInformation = withIncompleteLicenseInformation ?? throw new System.ArgumentNullException(nameof(withIncompleteLicenseInformation));
         }
 
         /// <summary>
@@ -45,6 +46,12 @@ namespace DotnetRefScan
         /// <summary>
         /// Gets package references with invalid license information.
         /// </summary>
-        public ICollection<UsedPackageReference> WithInvalidLicense { get; }
+        public ICollection<PackageReference> WithInvalidLicense { get; }
+
+        /// <summary>
+        /// Gets used package references with incomplete license information.
+        /// For these packages, not all license information values could be loaded, therefore you should verify it manually.
+        /// </summary>
+        public ICollection<UsedPackageReference> WithIncompleteLicenseInformation { get; }
     }
 }

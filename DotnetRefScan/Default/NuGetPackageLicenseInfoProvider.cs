@@ -82,6 +82,15 @@ namespace DotnetRefScan.Default
                     .InnerText?
                     .Trim();
 
+                // Fallback to authors
+                if (string.IsNullOrEmpty(copyright))
+                {
+                    copyright = doc
+                        .SelectSingleNode("//ns:authors", nsmgr)?
+                        .InnerText?
+                        .Trim();
+                }
+
                 // License (expression preferred)
                 string? license = doc
                     .SelectSingleNode("//ns:license[@type='expression']", nsmgr)?

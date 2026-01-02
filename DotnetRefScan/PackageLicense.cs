@@ -11,20 +11,20 @@ namespace DotnetRefScan
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageLicense"/> class.
         /// </summary>
-        /// <param name="copyright">Package copyright.</param>
+        /// <param name="copyrightOrAuthors">Package copyright / authors.</param>
         /// <param name="type">Package license type.</param>
         /// <param name="url">Package repository URL.</param>
-        public PackageLicense(string copyright, string type, string url)
+        public PackageLicense(string copyrightOrAuthors, string type, string url)
         {
-            Copyright = copyright;
+            CopyrightOrAuthors = copyrightOrAuthors;
             Type = type;
             RepositoryUrl = url;
         }
 
         /// <summary>
-        /// Gets package copyright.
+        /// Gets package copyright / authors.
         /// </summary>
-        public string Copyright { get; }
+        public string CopyrightOrAuthors { get; }
 
         /// <summary>
         /// Gets package license type.
@@ -37,12 +37,12 @@ namespace DotnetRefScan
         public string RepositoryUrl { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the package license is valid (non-empty).
+        /// Gets a value indicating whether the package license is provided (non-empty).
         /// </summary>
         /// <returns><see langword="true"/> if valid.</returns>
-        public bool IsValid()
+        public bool IsProvided()
         {
-            return !string.IsNullOrWhiteSpace(Copyright) && !string.IsNullOrWhiteSpace(Type) && !string.IsNullOrWhiteSpace(RepositoryUrl);
+            return !string.IsNullOrWhiteSpace(CopyrightOrAuthors) && !string.IsNullOrWhiteSpace(Type) && !string.IsNullOrWhiteSpace(RepositoryUrl);
         }
 
         /// <inheritdoc/>
@@ -55,7 +55,7 @@ namespace DotnetRefScan
         public bool Equals(PackageLicense? other)
         {
             return !(other is null) &&
-                   Copyright == other.Copyright &&
+                   CopyrightOrAuthors == other.CopyrightOrAuthors &&
                    Type == other.Type &&
                    RepositoryUrl == other.RepositoryUrl;
         }
@@ -63,7 +63,7 @@ namespace DotnetRefScan
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Copyright, Type, RepositoryUrl);
+            return HashCode.Combine(CopyrightOrAuthors, Type, RepositoryUrl);
         }
 
         /// <inheritdoc/>

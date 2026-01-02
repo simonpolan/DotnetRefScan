@@ -128,33 +128,45 @@ namespace DotnetRefScan
 
             ICollection<UsedPackageReference> missingInLicense = usedPackageReferences
                 .Where(r => IsReferenceRequiredInLicense(r) && !licensePackageReferences.Any(lr => Matches(lr, r)))
-                .Cast<UsedPackageReference>()
                 .ToList();
 
             ICollection<PackageReference> redundantInLicense = licensePackageReferences
                 .Where(lr => !IsReferenceAcceptedToBeRedundantInLicense(lr) && !usedPackageReferences.Any(r => Matches(lr, r)))
-                .Cast<PackageReference>()
                 .ToList();
 
             ICollection<UsedPackageReference> usedPackagesInLicense = usedPackageReferences
                 .Where(r => IsReferenceRequiredInLicense(r) && licensePackageReferences.Any(lr => Matches(lr, r)))
                 .ToList();
 
-            List<UsedPackageReference> packagesWithInvalidLicense = new List<UsedPackageReference>();
+            List<PackageReference> packagesWithInvalidLicense = new List<PackageReference>();
             if (VerifyLicenseInfo)
             {
                 foreach (var package in usedPackagesInLicense)
                 {
                     var packageInLicense = licensePackageReferences.Single(lr => lr.Name == package.Name && lr.Version == package.Version && lr.Source == package.Source);
-                    if ((package.License != null && packageInLicense.License != package.License) || // If license loaded successfully for the new package version, but it changed
-                        packageInLicense.License?.IsValid() != true) // If the license file contains INVALID license info for the given package
+                    if (IsLicenseUpdated(packageInLicense.License, package.License) // If license loaded successfully for the new package version, but it changed
+                     || packageInLicense.License?.IsProvided() != true) // If the license file contains INVALID license info for the given package
                     {
-                        packagesWithInvalidLicense.Add(package);
+                        packagesWithInvalidLicense.Add(packageInLicense);
                     }
                 }
             }
 
-            return new LicenseVerificationResult(usedPackageReferences, licensePackageReferences, missingInLicense, redundantInLicense, packagesWithInvalidLicense);
+            var withIncompleteLicenseInformation = usedPackageReferences
+                .Where(r => IsReferenceRequiredInLicense(r) && r.License?.IsProvided() != true)
+                .ToList();
+
+            return new LicenseVerificationResult(usedPackageReferences, licensePackageReferences, missingInLicense, redundantInLicense, packagesWithInvalidLicense, withIncompleteLicenseInformation);
+        }
+
+        private bool IsLicenseUpdated(PackageLicense? oldLicense, PackageLicense? newLicense)
+        {
+            if (newLicense == null)
+                return false;
+
+            return (!string.IsNullOrEmpty(newLicense.CopyrightOrAuthors) && newLicense.CopyrightOrAuthors != oldLicense?.CopyrightOrAuthors)
+                || (!string.IsNullOrEmpty(newLicense.Type) && newLicense.Type != oldLicense?.Type)
+                || (!string.IsNullOrEmpty(newLicense.RepositoryUrl) && newLicense.RepositoryUrl != oldLicense?.RepositoryUrl);
         }
 
         /// <summary>
@@ -167,11 +179,18 @@ namespace DotnetRefScan
             ICollection<UsedPackageReference> usedPackageReferences = await LoadUsedReferences().ConfigureAwait(false);
             ICollection<PackageReference> licensePackageReferences = await LoadLicenseReferences(licenseFileName).ConfigureAwait(false);
 
-            ICollection<(PackageReference OldReference, UsedPackageReference NewReference)> updatedReferences = usedPackageReferences.Where(r => IsReferenceRequiredInLicense(r) && licensePackageReferences.Any(lr => lr.Name == r.Name && lr.Source == r.Source) && !licensePackageReferences.Any(lr => Matches(lr, r))).Cast<UsedPackageReference>().Select(r => (licensePackageReferences.First(lr => lr.Name == r.Name && lr.Source == r.Source), r)).ToList();
+            ICollection<(PackageReference OldReference, UsedPackageReference NewReference)> updatedReferences = usedPackageReferences
+                .Where(r => IsReferenceRequiredInLicense(r) && licensePackageReferences.Any(lr => lr.Name == r.Name && lr.Source == r.Source) && !licensePackageReferences.Any(lr => Matches(lr, r)))
+                .Select(r => (licensePackageReferences.First(lr => lr.Name == r.Name && lr.Source == r.Source), r))
+                .ToList();
 
-            ICollection<UsedPackageReference> missingInLicense = usedPackageReferences.Where(r => IsReferenceRequiredInLicense(r) && !licensePackageReferences.Any(lr => lr.Name == r.Name && lr.Source == r.Source)).Cast<UsedPackageReference>().ToList();
+            ICollection<UsedPackageReference> missingInLicense = usedPackageReferences
+                .Where(r => IsReferenceRequiredInLicense(r) && !licensePackageReferences.Any(lr => lr.Name == r.Name && lr.Source == r.Source))
+                .ToList();
 
-            ICollection<PackageReference> redundantInLicense = licensePackageReferences.Where(lr => !IsReferenceAcceptedToBeRedundantInLicense(lr) && !usedPackageReferences.Any(r => r.Name == lr.Name && r.Source == lr.Source)).Cast<PackageReference>().ToList();
+            ICollection<PackageReference> redundantInLicense = licensePackageReferences
+                .Where(lr => !IsReferenceAcceptedToBeRedundantInLicense(lr) && !usedPackageReferences.Any(r => r.Name == lr.Name && r.Source == lr.Source))
+                .ToList();
 
             // Update references
             foreach (var (oldReference, newReference) in updatedReferences)
