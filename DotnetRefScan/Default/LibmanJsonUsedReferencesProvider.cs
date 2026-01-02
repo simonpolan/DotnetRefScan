@@ -37,7 +37,7 @@ namespace DotnetRefScan.Default
 
             LibmanReferences? libmanReferences = JsonSerializer.Deserialize<LibmanReferences>(json);
 
-            return libmanReferences?.Libraries
+            var packages = libmanReferences?.Libraries
                     .Where(l => l.Name != null)
                     .Select(l => new UsedPackageReference(
                         l.Name![..l.Name!.LastIndexOf('@')],
@@ -50,7 +50,12 @@ namespace DotnetRefScan.Default
                     .OrderBy(l => l.Name)
                     .ToList()
                     .DistinctAndSorted()
+                    .ToList()
                     ?? new List<UsedPackageReference>();
+
+            await PackageLicenseInfoProvider.TryGetLicenses(packages, shouldLoadLicense).ConfigureAwait(false);
+
+            return packages;
         }
 
         private class LibmanReferences

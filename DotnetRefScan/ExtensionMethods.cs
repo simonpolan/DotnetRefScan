@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DotnetRefScan
 {
@@ -86,6 +87,23 @@ namespace DotnetRefScan
         public static string? TryGet(this List<string> list, int? index)
         {
             return index.HasValue && list.Count > index.Value ? list[index.Value].Trim() : null;
+        }
+
+        public static async Task TryGetLicenses(this IPackageLicenseInfoProvider? packageLicenseInfoProvider, List<UsedPackageReference> references, Func<UsedPackageReference, bool>? shouldLoadLicense)
+        {
+            if (packageLicenseInfoProvider == null)
+                return;
+
+            for (int i = 0; i < references.Count; i++)
+            {
+                var r = references[i];
+
+                if (shouldLoadLicense != null && !shouldLoadLicense(r))
+                    continue;
+
+                var license = await packageLicenseInfoProvider.TryGetLicense(r.Name, r.Version).ConfigureAwait(false);
+                references[i] = new UsedPackageReference(r.Name, r.Version, r.Source, license, r.ProviderName, r.DefinitionFileName);
+            }
         }
     }
 }

@@ -76,20 +76,7 @@ namespace DotnetRefScan.Default
                 .DistinctAndSorted()
                 .ToList();
 
-            // Load license information if enabled
-            if (PackageLicenseInfoProvider != null)
-            {
-                for (int i = 0; i < packages.Count; i++)
-                {
-                    var p = packages[i];
-
-                    if (shouldLoadLicense != null && !shouldLoadLicense(p))
-                        continue;
-
-                    var license = await PackageLicenseInfoProvider.TryGetLicense(p.Name, p.Version).ConfigureAwait(false);
-                    packages[i] = new UsedPackageReference(p.Name, p.Version, p.Source, license, p.ProviderName, p.DefinitionFileName);
-                }
-            }
+            await PackageLicenseInfoProvider.TryGetLicenses(packages, shouldLoadLicense).ConfigureAwait(false);
 
             return packages;
         }
