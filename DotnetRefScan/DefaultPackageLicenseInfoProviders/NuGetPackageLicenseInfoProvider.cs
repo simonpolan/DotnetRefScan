@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Linq;
+using System.Diagnostics;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace DotnetRefScan.DefaultPackageLicenseInfoProviders
 {
@@ -27,7 +27,7 @@ namespace DotnetRefScan.DefaultPackageLicenseInfoProviders
         }
 
         /// <summary>
-        /// Tries to load license info for the given package.
+        /// Tries to load license info for the given package via NuGet v3-flatcontainer API.
         /// </summary>
         /// <param name="packageId">Package ID / name.</param>
         /// <param name="packageVersion">Package version (optional).</param>
@@ -35,64 +35,59 @@ namespace DotnetRefScan.DefaultPackageLicenseInfoProviders
         /// <returns>Instance of <see cref="PackageLicense"/> of found. Otherwise <see langword="null"/>.</returns>
         public virtual async Task<PackageLicense?> TryGetLicense(string packageId, string? packageVersion = null, CancellationToken cancellationToken = default)
         {
-            var registrationUrl = $"v3/registration5-semver1/{packageId.ToLowerInvariant()}/index.json";
-
-            using var response = await _httpClient.GetAsync(registrationUrl, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            using var document = JsonDocument.Parse(content);
-
-            var root = document.RootElement;
-
-            // Flatten all versions across pages
-            var allVersions =
-                root.GetProperty("items")
-                    .EnumerateArray()
-                    .SelectMany(page =>
-                        page.TryGetProperty("items", out var items)
-                            ? items.EnumerateArray()
-                            : Enumerable.Empty<JsonElement>())
-                    .Select(item => item.GetProperty("catalogEntry"));
-
-            var selected =
-                packageVersion == null
-                    ? allVersions
-                        .OrderByDescending(v => v.GetProperty("version").GetString(), StringComparer.OrdinalIgnoreCase)
-                        .FirstOrDefault()
-                    : allVersions.FirstOrDefault(v =>
-                        string.Equals(
-                            v.GetProperty("version").GetString(),
-                            packageVersion,
-                            StringComparison.OrdinalIgnoreCase));
-
-            if (selected.ValueKind == JsonValueKind.Undefined)
-                return null;
-
-            var info = new
+            try
             {
-                LicenseExpression = selected.TryGetProperty("licenseExpression", out var le)
-                ? le.GetString()
-                : null,
+                if (string.IsNullOrWhiteSpace(packageId))
+                    throw new ArgumentException(nameof(packageId));
 
-                LicenseUrl = selected.TryGetProperty("licenseUrl", out var lu)
-                ? lu.GetString()
-                : null,
+                if (string.IsNullOrWhiteSpace(packageVersion))
+                    throw new ArgumentException(nameof(packageVersion));
 
-                ProjectUrl = selected.TryGetProperty("projectUrl", out var p)
-                ? p.GetString()
-                : null,
-            };
+                var idLower = packageId.ToLowerInvariant();
+                var xml = await _httpClient.GetStringAsync($"/v3-flatcontainer/{idLower}/{packageVersion}/{idLower}.nuspec");
 
-            string? copyright = null;
-            if (info.LicenseUrl != null && info.LicenseUrl.EndsWith(".md", StringComparison.InvariantCultureIgnoreCase))
-            {
-                string licenseText = await _httpClient.GetStringAsync(info.LicenseUrl);
+                var doc = new XmlDocument();
+                doc.LoadXml(xml);
+
+                var nsmgr = new XmlNamespaceManager(doc.NameTable);
+                nsmgr.AddNamespace("ns", doc.DocumentElement!.NamespaceURI);
+
+                // Repository URL
+                string? repositoryUrl = doc
+                    .SelectSingleNode("//ns:repository", nsmgr)?
+                    .Attributes?["url"]?
+                    .Value;
+
+                // Copyright
+                string? copyright = doc
+                    .SelectSingleNode("//ns:copyright", nsmgr)?
+                    .InnerText?
+                    .Trim();
+
+                // License (expression preferred)
+                string? license = doc
+                    .SelectSingleNode("//ns:license[@type='expression']", nsmgr)?
+                    .InnerText?
+                    .Trim();
+
+                // Fallback to legacy licenseUrl
+                if (string.IsNullOrEmpty(license))
+                {
+                    license = doc
+                        .SelectSingleNode("//ns:licenseUrl", nsmgr)?
+                        .InnerText?
+                        .Trim();
+                }
+
+                return new PackageLicense(copyright ?? string.Empty,
+                                          license ?? string.Empty,
+                                          repositoryUrl ?? string.Empty);
             }
-
-            return new PackageLicense(copyright ?? string.Empty,
-                                      info.LicenseExpression ?? string.Empty,
-                                      info.LicenseUrl ?? info.ProjectUrl ?? string.Empty);
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return null;
+            }
         }
     }
 }

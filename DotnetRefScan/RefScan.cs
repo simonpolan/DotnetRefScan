@@ -24,12 +24,14 @@ namespace DotnetRefScan
         /// <param name="searchOption">Search options.</param>
         /// <param name="filter">Package references file filter. Return <see langword="true"/> to include the file.</param>
         /// <param name="verifyPackageLicenses">A value indicating whether the package license info should be loaded and verified.</param>
-        public RefScan(string location, SearchOption searchOption = SearchOption.AllDirectories, Func<string, bool>? filter = null, bool verifyPackageLicenses = false)
+        public RefScan(string location, SearchOption searchOption = SearchOption.AllDirectories, Func<string, bool>? filter = null, bool verifyPackageLicenses = true)
         {
             _location = location;
             _searchOption = searchOption;
             _filter = filter;
             VerifyPackageLicenses = verifyPackageLicenses;
+
+            LicenseReferencesProvider = new MarkdownLicenseReferencesProvider(verifyLicenseInfo: verifyPackageLicenses);
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace DotnetRefScan
         /// License references provider.
         /// You can change the provider here.
         /// </summary>
-        public ILicenseReferencesProvider LicenseReferencesProvider { get; set; } = new MarkdownLicenseReferencesProvider();
+        public ILicenseReferencesProvider LicenseReferencesProvider { get; set; }
 
         /// <summary>
         /// Gets or sets a filter which decides whether the given package reference must be mentioned in the License file.
@@ -125,10 +127,29 @@ namespace DotnetRefScan
             ICollection<UsedPackageReference> usedPackageReferences = await LoadUsedReferences().ConfigureAwait(false);
             ICollection<PackageReference> licensePackageReferences = await LoadLicenseReferences(licenseFileName).ConfigureAwait(false);
 
-            ICollection<UsedPackageReference> missingInLicense = usedPackageReferences.Where(IsReferenceRequiredInLicense).Except(licensePackageReferences).Cast<UsedPackageReference>().ToList();
-            ICollection<PackageReference> redundantInLicense = licensePackageReferences.Where(IsReferenceAcceptedToBeRedundantInLicense.Not()).Except(usedPackageReferences).ToList();
+            ICollection<UsedPackageReference> missingInLicense = usedPackageReferences
+                .Where(r => IsReferenceRequiredInLicense(r) && !licensePackageReferences.Any(lr => lr.Name == r.Name && lr.Version == r.Version && lr.Source == r.Source))
+                .Cast<UsedPackageReference>()
+                .ToList();
 
-            return new LicenseVerificationResult(usedPackageReferences, licensePackageReferences, missingInLicense, redundantInLicense);
+            ICollection<PackageReference> redundantInLicense = licensePackageReferences
+                .Where(lr => !IsReferenceAcceptedToBeRedundantInLicense(lr) && !usedPackageReferences.Any(r => r.Name == lr.Name && lr.Version == r.Version && r.Source == lr.Source))
+                .Cast<PackageReference>()
+                .ToList();
+
+            ICollection<UsedPackageReference> usedPackagesInLicense = usedPackageReferences
+                .Where(p => IsReferenceRequiredInLicense(p) && licensePackageReferences.Contains(p))
+                .ToList();
+
+            List<UsedPackageReference> packagesWithInvalidLicense = new List<UsedPackageReference>();
+            foreach (var package in usedPackagesInLicense)
+            {
+                var packageInLicense = licensePackageReferences.Single(p => p == package);
+                if (package.License != null && packageInLicense.License != package.License)
+                    packagesWithInvalidLicense.Add(package);
+            }
+
+            return new LicenseVerificationResult(usedPackageReferences, licensePackageReferences, missingInLicense, redundantInLicense, packagesWithInvalidLicense);
         }
 
         /// <summary>

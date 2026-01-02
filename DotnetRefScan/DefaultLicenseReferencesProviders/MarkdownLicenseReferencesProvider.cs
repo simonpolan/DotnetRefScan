@@ -221,11 +221,13 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
             if (!VerifyLicenseInfo)
                 return null;
 
-            string? copyright = packageInfo.TryGet(CopyrightColumnIndex) ?? string.Empty;
-            string? type = packageInfo.TryGet(LicenseColumnIndex) ?? string.Empty;
-            string? url = packageInfo.TryGet(UrlColumnIndex) ?? string.Empty;
+            string? copyright = packageInfo.TryGet(CopyrightColumnIndex)?.Trim() ?? string.Empty;
+            string? type = packageInfo.TryGet(LicenseColumnIndex)?.Trim() ?? string.Empty;
+            string? url = packageInfo.TryGet(UrlColumnIndex)?.Trim() ?? string.Empty;
 
-            return new PackageLicense(copyright, type, url);
+            return !string.IsNullOrEmpty(copyright) || !string.IsNullOrEmpty(type) || !string.IsNullOrEmpty(url)
+                ? new PackageLicense(copyright, type, url)
+                : null;
         }
 
         /// <summary>
@@ -252,14 +254,15 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
         {
             fields[VersionColumnIndex] = reference.Version;
 
-            if (CopyrightColumnIndex.HasValue)
-                fields[CopyrightColumnIndex.Value] = reference.License?.Copyright ?? string.Empty;
+            // Update license info only if new value is available
+            if (CopyrightColumnIndex.HasValue && !string.IsNullOrEmpty(reference.License?.Copyright))
+                fields[CopyrightColumnIndex.Value] = reference.License.Copyright;
 
-            if (LicenseColumnIndex.HasValue)
-                fields[LicenseColumnIndex.Value] = reference.License?.Type ?? string.Empty;
+            if (LicenseColumnIndex.HasValue && !string.IsNullOrEmpty(reference.License?.Type))
+                fields[LicenseColumnIndex.Value] = reference.License.Type;
 
-            if (UrlColumnIndex.HasValue)
-                fields[UrlColumnIndex.Value] = reference.License?.Url ?? string.Empty;
+            if (UrlColumnIndex.HasValue && !string.IsNullOrEmpty(reference.License?.RepositoryUrl))
+                fields[UrlColumnIndex.Value] = reference.License.RepositoryUrl;
         }
 
         /// <summary>
@@ -288,7 +291,7 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
                 fields.Insert(LicenseColumnIndex.Value, reference.License?.Type ?? string.Empty);
 
             if (UrlColumnIndex.HasValue)
-                fields.Insert(UrlColumnIndex.Value, reference.License?.Url ?? string.Empty);
+                fields.Insert(UrlColumnIndex.Value, reference.License?.RepositoryUrl ?? string.Empty);
 
             return _markdownFormatter.GetRowString(fields);
         }
@@ -301,11 +304,6 @@ namespace DotnetRefScan.DefaultLicenseReferencesProviders
         internal protected virtual void SaveToFile(string filePath, List<string> lines)
         {
             File.WriteAllText(filePath, string.Join(Environment.NewLine, lines).TrimEnd(), Encoding.UTF8);
-        }
-
-        private string? TryGetValue(List<string> packageInfo, int? index)
-        {
-            return index.HasValue && packageInfo.Count > index.Value ? packageInfo[index.Value].Trim() : null;
         }
     }
 }

@@ -6,14 +6,14 @@
         <Nullable>enable</Nullable>
         <Product>DotnetRefScan</Product>
         <Authors>Simon Polan</Authors>
-        <Copyright>Copyright © Simon Polan 2025</Copyright>
+        <Copyright>Copyright © Simon Polan 2026</Copyright>
         <Version>2.3.0</Version>
         <Description>Reference scanner for Dotnet applications. It loads NuGets and Libman references from your source code.</Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageProjectUrl>https://github.com/simonpolan/DotnetRefScan</PackageProjectUrl>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-        <PackageReleaseNotes>Package references versions could be auto-updated in the license file + the license file table can be auto-formatted.</PackageReleaseNotes>
+        <PackageReleaseNotes>Reads license information for NuGet packages from NuGet API (copyright, license type, project url).</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 

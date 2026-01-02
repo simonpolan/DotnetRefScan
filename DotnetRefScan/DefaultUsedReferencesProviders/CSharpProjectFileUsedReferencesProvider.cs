@@ -77,6 +77,7 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
                 .DistinctAndSorted()
                 .ToList();
 
+            // Load license information if enabled
             if (PackageLicenseInfoProvider != null)
             {
                 for (int i = 0; i < packages.Count; i++)
@@ -87,7 +88,7 @@ namespace DotnetRefScan.DefaultUsedReferencesProviders
                         continue;
 
                     var license = await PackageLicenseInfoProvider.TryGetLicense(p.Name, p.Version);
-                    packages[i] = new UsedPackageReference(p.Name, p.Version, p.Source, null, p.ProviderName, p.DefinitionFileName);
+                    packages[i] = new UsedPackageReference(p.Name, p.Version, p.Source, license, p.ProviderName, p.DefinitionFileName);
                 }
             }
 

@@ -29,7 +29,7 @@ namespace DotnetRefScan
         /// Loads used package references from the provided file.
         /// </summary>
         /// <param name="fileName">File to load the package references from.</param>
-        /// <param name="shouldLoadLicense">A predicate for license info loading - if <see langword="true"/>, the license info will be loaded for the given package.</param>
+        /// <param name="shouldLoadLicense">A predicate for license info loading - if <see langword="true"/>, the license info will be loaded for the given package. If <see langword="null"/>, license will be loaded for all packages references.</param>
         /// <returns>Collection of used package references.</returns>
         Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName, Func<UsedPackageReference, bool>? shouldLoadLicense);
     }

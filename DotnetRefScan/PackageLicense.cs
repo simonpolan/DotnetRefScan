@@ -13,12 +13,12 @@ namespace DotnetRefScan
         /// </summary>
         /// <param name="copyright">Package copyright.</param>
         /// <param name="type">Package license type.</param>
-        /// <param name="url">Package URL.</param>
+        /// <param name="url">Package repository URL.</param>
         public PackageLicense(string copyright, string type, string url)
         {
             Copyright = copyright;
             Type = type;
-            Url = url;
+            RepositoryUrl = url;
         }
 
         /// <summary>
@@ -32,9 +32,9 @@ namespace DotnetRefScan
         public string Type { get; }
 
         /// <summary>
-        /// Gets package URL.
+        /// Gets package repository URL.
         /// </summary>
-        public string Url { get; }
+        public string RepositoryUrl { get; }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)
@@ -48,13 +48,13 @@ namespace DotnetRefScan
             return !(other is null) &&
                    Copyright == other.Copyright &&
                    Type == other.Type &&
-                   Url == other.Url;
+                   RepositoryUrl == other.RepositoryUrl;
         }
 
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Copyright, Type, Url);
+            return HashCode.Combine(Copyright, Type, RepositoryUrl);
         }
 
         /// <inheritdoc/>

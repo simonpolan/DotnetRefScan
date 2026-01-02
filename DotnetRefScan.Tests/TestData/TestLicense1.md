@@ -2,7 +2,7 @@
 
 License text...
 
-### Copyright (C) DotnetRefScan 2025.
+### Copyright (C) DotnetRefScan 2026.
 ### All rights reserved.
 ### Written by DotnetRefScan.
 
@@ -13,6 +13,6 @@ License text...
 | package1 | 4.5.6   | cdnjs    |           |              |                         |
 | package2 | 4.5.6   | cdnjs    |           | MIT          |                         |
 | package1 | 1.2.3   | jsdelivr |           | MIT          |                         |
-| package3 | 7.8.9   | jsdelivr |           | MIT          |                         |
+| package3 | 7.8.9   | jsdelivr | copyright | MIT          | N/A                     |
 
 *Additionally, .NET, Microsoft and System libraries are used*

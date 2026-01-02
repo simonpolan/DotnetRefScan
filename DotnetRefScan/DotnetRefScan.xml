@@ -125,7 +125,7 @@
         </member>
         <member name="M:DotnetRefScan.DefaultPackageLicenseInfoProviders.NuGetPackageLicenseInfoProvider.TryGetLicense(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
-            Tries to load license info for the given package.
+            Tries to load license info for the given package via NuGet v3-flatcontainer API.
             </summary>
             <param name="packageId">Package ID / name.</param>
             <param name="packageVersion">Package version (optional).</param>
@@ -251,7 +251,7 @@
             Loads used package references from the provided file.
             </summary>
             <param name="fileName">File to load the package references from.</param>
-            <param name="shouldLoadLicense">A predicate for license info loading - if <see langword="true"/>, the license info will be loaded for the given package.</param>
+            <param name="shouldLoadLicense">A predicate for license info loading - if <see langword="true"/>, the license info will be loaded for the given package. If <see langword="null"/>, license will be loaded for all packages references.</param>
             <returns>Collection of used package references.</returns>
         </member>
         <member name="T:DotnetRefScan.LicenseVerificationResult">
@@ -285,6 +285,11 @@
             Gets package references which are redundant in the license file and should be therefore removed.
             </summary>
         </member>
+        <member name="P:DotnetRefScan.LicenseVerificationResult.PackagesWithInvalidLicense">
+            <summary>
+            Gets package references with invalid license information.
+            </summary>
+        </member>
         <member name="T:DotnetRefScan.PackageLicense">
             <summary>
             Package license model.
@@ -296,7 +301,7 @@
             </summary>
             <param name="copyright">Package copyright.</param>
             <param name="type">Package license type.</param>
-            <param name="url">Package URL.</param>
+            <param name="url">Package repository URL.</param>
         </member>
         <member name="P:DotnetRefScan.PackageLicense.Copyright">
             <summary>
@@ -308,9 +313,9 @@
             Gets package license type.
             </summary>
         </member>
-        <member name="P:DotnetRefScan.PackageLicense.Url">
+        <member name="P:DotnetRefScan.PackageLicense.RepositoryUrl">
             <summary>
-            Gets package URL.
+            Gets package repository URL.
             </summary>
         </member>
         <member name="M:DotnetRefScan.PackageLicense.Equals(System.Object)">
