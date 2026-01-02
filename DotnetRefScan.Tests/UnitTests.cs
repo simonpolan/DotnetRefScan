@@ -266,7 +266,7 @@ License text...
 |-----------------------------------|---------|------------|-----------------------------------|-------------------------|---------------------------------|
 | package1                          | 1.2.3   | jsdelivr   | test                              | MIT                     |                                 |
 | package2                          | 4.5.6   | cdnjs      |                                   | MIT                     | http://test                     |
-| package3                          | 7.8.9   | jsdelivr   |                                   | MIT                     |                                 |
+| package3                          | 7.8.8   | jsdelivr   |                                   | MIT                     |                                 |
 
 *Additionally, .NET, Microsoft and System libraries are used*";
 
