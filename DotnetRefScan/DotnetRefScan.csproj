@@ -7,14 +7,14 @@
         <Product>DotnetRefScan</Product>
         <Authors>Simon Polan</Authors>
         <Copyright>Copyright © Simon Polan 2026</Copyright>
-        <Version>3.0.4</Version>
+        <Version>3.0.5</Version>
         <Description>Reference scanner for Dotnet applications. It loads NuGets and Libman references from your source code.</Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageProjectUrl>https://github.com/simonpolan/DotnetRefScan</PackageProjectUrl>
         <RepositoryUrl>https://github.com/simonpolan/DotnetRefScan</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-        <PackageReleaseNotes>Reads license information for NuGet packages from NuGet API (copyright, license type, project url) and uses such information for license verification and updates.</PackageReleaseNotes>
+        <PackageReleaseNotes>Improved stability and error handling of CSharpProjectFileUsedReferencesProvider.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Text.Json" Version="10.0.1" />
+        <PackageReference Include="System.Text.Json" Version="8.0.6" />
     </ItemGroup>
 
     <ItemGroup>

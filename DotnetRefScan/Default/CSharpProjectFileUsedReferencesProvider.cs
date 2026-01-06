@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -32,15 +33,26 @@ namespace DotnetRefScan.Default
                 return new List<UsedPackageReference>();
             }
 
-            string workingDirectory = Path.GetDirectoryName(fileName);
 
-            var (ExitCode, StdOut, StdErr) = await RunProcessAsync("dotnet", "list package --include-transitive --format json", workingDirectory).ConfigureAwait(false);
-            if (ExitCode != 0 || !string.IsNullOrEmpty(StdErr) || string.IsNullOrEmpty(StdOut))
+            PackageReferences? references = null;
+            for (int i = 0; i < 3; i++)
             {
-                throw new InvalidOperationException($"Dotnet command exited with code {ExitCode}. Details: {StdErr}.");
-            }
+                try
+                {
+                    references = await TryListReferences(fileName).ConfigureAwait(false);
 
-            PackageReferences? references = JsonSerializer.Deserialize<PackageReferences>(StdOut);
+                    if (references != null)
+                        break;
+                }
+                catch (InvalidOperationException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                }
+            }
 
             if (references == null)
             {
@@ -79,6 +91,17 @@ namespace DotnetRefScan.Default
             await PackageLicenseInfoProvider.TryGetLicenses(packages, shouldLoadLicense).ConfigureAwait(false);
 
             return packages;
+        }
+
+        private static async Task<PackageReferences?> TryListReferences(string fileName)
+        {
+            var (ExitCode, StdOut, StdErr) = await RunProcessAsync("dotnet", $"package list --project \"{fileName}\" --include-transitive --format json --no-restore", Path.GetDirectoryName(fileName)).ConfigureAwait(false);
+            if (ExitCode != 0 || !string.IsNullOrEmpty(StdErr) || string.IsNullOrEmpty(StdOut))
+            {
+                throw new InvalidOperationException($"Dotnet command exited with code {ExitCode}. Output: {StdOut}. Error: {StdErr}.");
+            }
+
+            return JsonSerializer.Deserialize<PackageReferences>(StdOut);
         }
 
         private static async Task<(int ExitCode, string StdOut, string StdErr)> RunProcessAsync(string fileName, string arguments, string workingDirectory)

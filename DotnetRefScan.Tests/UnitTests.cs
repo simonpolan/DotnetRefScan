@@ -8,44 +8,19 @@ namespace DotnetRefScan.Tests
     [NonParallelizable]
     public class Tests
     {
-        private readonly string solutionRootFolder;
-        private readonly string testDataFolder;
+        private readonly string _solutionRootFolder;
+        private readonly string _testDataFolder;
 
         public Tests()
         {
-            solutionRootFolder = StorageHelper.GetSolutionRoot()!;
-            testDataFolder = Path.Combine(solutionRootFolder, Assembly.GetExecutingAssembly().GetName().Name!, "TestData");
-        }
-
-        [OneTimeSetUp]
-        public async Task Setup()
-        {
-            RefScan refScan = new(solutionRootFolder);
-
-            for (int i = 0; i < 3; i++)
-            {
-                try
-                {
-                    // This is needed to have the test succeed in CI - not clear why, but the first execution tends to fail on:
-                    // System.IO.IOException : Cannot assign requested address
-                    // ----> System.Net.Sockets.SocketException : Cannot assign requested address
-                    // Stack Trace:
-                    //    at System.IO.Pipes.PipeStream.ReadAsyncCore(Memory`1 destination, CancellationToken cancellationToken)
-                    _ = await refScan.LoadUsedReferences();
-                    break;
-                }
-                catch
-                {
-                    // Ignore
-                    await Task.Delay(250);
-                }
-            }
+            _solutionRootFolder = StorageHelper.GetSolutionRoot()!;
+            _testDataFolder = Path.Combine(_solutionRootFolder, Assembly.GetExecutingAssembly().GetName().Name!, "TestData");
         }
 
         [Test]
         public async Task LoadUsedReferences()
         {
-            RefScan refScan = new(solutionRootFolder, filter: p => !p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
+            RefScan refScan = new(_solutionRootFolder, filter: p => !p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
@@ -64,7 +39,7 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task LoadUsedReferencesWithFilter()
         {
-            RefScan refScan = new(solutionRootFolder, filter: p => p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
+            RefScan refScan = new(_solutionRootFolder, filter: p => p.EndsWith("tests.csproj", StringComparison.OrdinalIgnoreCase));
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
@@ -83,7 +58,7 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task LoadUsedReferencesWithCustomProvider()
         {
-            RefScan refScan = new(solutionRootFolder);
+            RefScan refScan = new(_solutionRootFolder);
 
             refScan.UsedReferencesProviders.Add(new CustomReferenceProvider());
 
@@ -101,7 +76,7 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task LoadUsedReferencesWithCustomProviderOnly()
         {
-            RefScan refScan = new(solutionRootFolder);
+            RefScan refScan = new(_solutionRootFolder);
 
             refScan.UsedReferencesProviders.Clear();
             refScan.UsedReferencesProviders.Add(new CustomReferenceProvider());
@@ -121,7 +96,7 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task LoadUsedReferencesFromAllSubfolders()
         {
-            RefScan refScan = new(testDataFolder);
+            RefScan refScan = new(_testDataFolder);
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
@@ -140,7 +115,7 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task LoadUsedReferencesFromCurrentFolderOnly()
         {
-            RefScan refScan = new(testDataFolder, SearchOption.TopDirectoryOnly);
+            RefScan refScan = new(_testDataFolder, SearchOption.TopDirectoryOnly);
 
             ICollection<UsedPackageReference> references = await refScan.LoadUsedReferences();
 
@@ -159,9 +134,9 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task LoadLicenseReferences()
         {
-            RefScan refScan = new(testDataFolder);
+            RefScan refScan = new(_testDataFolder);
 
-            ICollection<PackageReference> references = await refScan.LoadLicenseReferences(Path.Combine(testDataFolder, "TestLicense1.md"));
+            ICollection<PackageReference> references = await refScan.LoadLicenseReferences(Path.Combine(_testDataFolder, "TestLicense1.md"));
 
             using (Assert.EnterMultipleScope())
             {
@@ -177,13 +152,13 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task VerifyLicense_IgnoreLicenseInfo()
         {
-            RefScan refScan = new(solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"), verifyLicenseInfo: false)
+            RefScan refScan = new(_solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"), verifyLicenseInfo: false)
             {
                 IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && r.Name != typeof(RefScan).Assembly.GetName().Name,
                 IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage"
             };
 
-            string licenseFileName = Path.Combine(testDataFolder, "TestLicense2.md");
+            string licenseFileName = Path.Combine(_testDataFolder, "TestLicense2.md");
             LicenseVerificationResult result = await refScan.VerifyLicense(licenseFileName);
 
             using (Assert.EnterMultipleScope())
@@ -201,13 +176,13 @@ namespace DotnetRefScan.Tests
         [Test]
         public async Task VerifyLicense_CheckLicenseInfo()
         {
-            RefScan refScan = new(solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"))
+            RefScan refScan = new(_solutionRootFolder, filter: fileName => !fileName.EndsWith(".Tests.csproj"))
             {
                 IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && r.Name != typeof(RefScan).Assembly.GetName().Name,
                 IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage"
             };
 
-            string licenseFileName = Path.Combine(testDataFolder, "TestLicense3.md");
+            string licenseFileName = Path.Combine(_testDataFolder, "TestLicense3.md");
             LicenseVerificationResult result = await refScan.VerifyLicense(licenseFileName);
 
             using (Assert.EnterMultipleScope())
@@ -238,14 +213,14 @@ namespace DotnetRefScan.Tests
             licenseProvider.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<List<string>>())).DoNotCallBase();
             licenseProvider.When(f => f.SaveToFile(Arg.Any<string>(), Arg.Any<List<string>>())).Do(info => output = string.Join(Environment.NewLine, (List<string>)info.Args()[1]).TrimEnd());
 
-            RefScan refScan = new(solutionRootFolder)
+            RefScan refScan = new(_solutionRootFolder)
             {
                 IsReferenceRequiredInLicense = (r) => !r.Name.StartsWith("Microsoft") && !r.Name.StartsWith("NETStandard") && !r.Name.StartsWith("System") && !r.Name.StartsWith("NUnit") && (!r.Source.StartsWith("NuGet") || r.Name == "Newtonsoft.Json") && r.Name != typeof(RefScan).Assembly.GetName().Name,
                 IsReferenceAcceptedToBeRedundantInLicense = (r) => r.Name == "RedundantPackage",
                 LicenseReferencesProvider = licenseProvider,
             };
 
-            await refScan.UpdateLicense(Path.Combine(testDataFolder, "TestLicense1.md"));
+            await refScan.UpdateLicense(Path.Combine(_testDataFolder, "TestLicense1.md"));
 
             Assert.That(output, Is.EqualTo(LicenseTextAfterUpdate));
         }
