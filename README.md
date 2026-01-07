@@ -130,7 +130,7 @@ var licensePackageReferences = await refScan.LoadLicenseReferences("License file
 
 ## Release notes
 
-### 2026-01-07 - 3.1.0
+### 2026-01-07 - 3.1.1
 The C# project file used references provider stability, error handling and configurability improved.
 
 ### 2026-01-02 - 3.0.4
