@@ -130,6 +130,9 @@ var licensePackageReferences = await refScan.LoadLicenseReferences("License file
 
 ## Release notes
 
+### 2026-01-07 - 3.1.0
+The C# project file used references provider stability, error handling and configurability improved.
+
 ### 2026-01-02 - 3.0.4
 The library now allows to read license information for NuGet packages from NuGet API (copyright, license type, project url) and use this information for license verification and updates.
 

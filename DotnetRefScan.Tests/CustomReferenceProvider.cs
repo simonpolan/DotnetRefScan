@@ -10,6 +10,8 @@
 
         public IPackageLicenseInfoProvider? PackageLicenseInfoProvider => null;
 
+        public int LicenseInfoLoadingMaxDegreeOfParallelism { get; set; } = 1;
+
         public Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName, Func<UsedPackageReference, bool>? shouldLoadLicense)
         {
             return Task.FromResult((ICollection<UsedPackageReference>)
