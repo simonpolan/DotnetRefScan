@@ -33,6 +33,9 @@ namespace DotnetRefScan.Extensions
                 tasks.Add(TryGetLicense(packageLicenseInfoProvider, references, i));
             });
 
+            if (tasks.Count == 0)
+                return;
+
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
