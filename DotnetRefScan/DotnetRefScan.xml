@@ -19,8 +19,151 @@
         <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.PackageLicenseInfoProvider">
             <inheritdoc/>
         </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.LicenseInfoLoadingMaxDegreeOfParallelism">
+            <inheritdoc/>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.DotnetCommand">
+            <summary>
+            Gets or sets Dotnet command name (e.g. "dotnet" or a full path to the dotnet.exe).
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.RestoreBeforeList">
+            <summary>
+            Gets or sets a value indicating whether the DOTNET RESTORE action should be performed before the DOTNET PACKAGE LIST command.
+            </summary>
+        </member>
         <member name="M:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.LoadReferences(System.String,System.Func{DotnetRefScan.UsedPackageReference,System.Boolean})">
             <inheritdoc/>
+        </member>
+        <member name="M:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.TryListProjectReferences(System.String)">
+            <summary>
+            Attempts to list a single project file references.
+            </summary>
+            <param name="fileName">Project file name.</param>
+            <returns>Package references if succeeded. Otherwise <c>null</c>.</returns>
+            <exception cref="T:System.InvalidOperationException">If DOTNET command returns failure success code.</exception>
+        </member>
+        <member name="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.PackageReferences">
+            <summary>
+            Represents the root object containing package reference information
+            for one or more projects.
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.PackageReferences.Version">
+            <summary>
+            Gets or sets the schema or format version of the package references file.
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.PackageReferences.Parameters">
+            <summary>
+            Gets or sets optional parameters associated with the package references.
+            </summary>
+            <value>
+            A string containing serialized parameters, or <c>null</c> if no parameters are defined.
+            </value>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.PackageReferences.Projects">
+            <summary>
+            Gets or sets the collection of projects included in the package references.
+            </summary>
+            <value>
+            An array of <see cref="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Project"/> instances, or <c>null</c> if no projects are defined.
+            </value>
+        </member>
+        <member name="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Project">
+            <summary>
+            Represents a single project and its associated target frameworks.
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Project.Path">
+            <summary>
+            Gets or sets the file system path to the project.
+            </summary>
+            <value>
+            A relative or absolute path to the project file, or <c>null</c> if unspecified.
+            </value>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Project.Frameworks">
+            <summary>
+            Gets or sets the target frameworks defined for the project.
+            </summary>
+            <value>
+            An array of <see cref="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Framework"/> instances, or <c>null</c> if no frameworks are defined.
+            </value>
+        </member>
+        <member name="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Framework">
+            <summary>
+            Represents a target framework and its package dependencies.
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Framework.FrameworkName">
+            <summary>
+            Gets or sets the name of the target framework.
+            </summary>
+            <value>
+            A target framework moniker (TFM), such as <c>net8.0</c> or <c>netstandard2.0</c>.
+            </value>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Framework.TopLevelPackages">
+            <summary>
+            Gets or sets the collection of top-level packages
+            directly referenced by the project.
+            </summary>
+            <value>
+            An array of <see cref="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Toplevelpackage"/> instances, or <c>null</c> if none are defined.
+            </value>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Framework.TransitivePackages">
+            <summary>
+            Gets or sets the collection of transitive packages
+            resolved as dependencies of top-level packages.
+            </summary>
+            <value>
+            An array of <see cref="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Transitivepackage"/> instances, or <c>null</c> if none are defined.
+            </value>
+        </member>
+        <member name="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Toplevelpackage">
+            <summary>
+            Represents a top-level NuGet package reference explicitly
+            requested by a project.
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Toplevelpackage.RequestedVersion">
+            <summary>
+            Gets or sets the version of the package explicitly requested
+            by the project.
+            </summary>
+            <value>
+            A version string as specified in the project file, or <c>null</c> if not defined.
+            </value>
+        </member>
+        <member name="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Transitivepackage">
+            <summary>
+            Represents a transitive NuGet package dependency
+            resolved indirectly through other packages.
+            </summary>
+        </member>
+        <member name="T:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Package">
+            <summary>
+            Represents a NuGet package with its resolved identity and version.
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Package.Id">
+            <summary>
+            Gets or sets the package identifier.
+            </summary>
+            <value>
+            The NuGet package ID, or <c>null</c> if not available.
+            </value>
+        </member>
+        <member name="P:DotnetRefScan.Default.CSharpProjectFileUsedReferencesProvider.Package.ResolvedVersion">
+            <summary>
+            Gets or sets the resolved version of the package.
+            </summary>
+            <value>
+            The exact version selected during package restore,
+            or <c>null</c> if not available.
+            </value>
         </member>
         <member name="T:DotnetRefScan.Default.LibmanJsonUsedReferencesProvider">
             <summary>
@@ -34,6 +177,9 @@
             <inheritdoc/>
         </member>
         <member name="P:DotnetRefScan.Default.LibmanJsonUsedReferencesProvider.PackageLicenseInfoProvider">
+            <inheritdoc/>
+        </member>
+        <member name="P:DotnetRefScan.Default.LibmanJsonUsedReferencesProvider.LicenseInfoLoadingMaxDegreeOfParallelism">
             <inheritdoc/>
         </member>
         <member name="M:DotnetRefScan.Default.LibmanJsonUsedReferencesProvider.LoadReferences(System.String,System.Func{DotnetRefScan.UsedPackageReference,System.Boolean})">
@@ -167,6 +313,61 @@
             <param name="cancellationToken">Cancellation token.</param>
             <returns>Instance of <see cref="T:DotnetRefScan.PackageLicense"/> of found. Otherwise <see langword="null"/>.</returns>
         </member>
+        <member name="T:DotnetRefScan.Extensions.CollectionExtensions">
+            <summary>
+            Extension methods for collections.
+            </summary>
+        </member>
+        <member name="M:DotnetRefScan.Extensions.CollectionExtensions.DistinctBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IEqualityComparer{``1})">
+            <summary>
+            Gets distinct values by the specified key.
+            </summary>
+            <typeparam name="TSource">Source type.</typeparam>
+            <typeparam name="TKey">Key selector type.</typeparam>
+            <param name="source">Source.</param>
+            <param name="keySelector">Key selector.</param>
+            <param name="comparer">Key comparer (optional).</param>
+            <returns>Distinct collection.</returns>
+        </member>
+        <member name="M:DotnetRefScan.Extensions.CollectionExtensions.DistinctAndSorted``1(System.Collections.Generic.ICollection{``0})">
+            <summary>
+            Gets distinct and sorted references.
+            </summary>
+            <typeparam name="T"><see cref="T:DotnetRefScan.PackageReference"/></typeparam>
+            <param name="references">References.</param>
+            <returns>Distinct and sorted references</returns>
+        </member>
+        <member name="M:DotnetRefScan.Extensions.CollectionExtensions.LatestAndSorted``1(System.Collections.Generic.ICollection{``0})">
+            <summary>
+            Gets latest and sorted references.
+            </summary>
+            <typeparam name="T"><see cref="T:DotnetRefScan.PackageReference"/></typeparam>
+            <param name="references">References.</param>
+            <returns>Latest and sorted references</returns>
+        </member>
+        <member name="M:DotnetRefScan.Extensions.CollectionExtensions.TryGet(System.Collections.Generic.IList{System.String},System.Nullable{System.Int32})">
+            <summary>
+            Tries get an item from the list by its index.
+            </summary>
+            <param name="list">List to search at.</param>
+            <param name="index">Item index.</param>
+            <returns>Item or <c>null</c>.</returns>
+        </member>
+        <member name="T:DotnetRefScan.Extensions.IPackageLicenseInfoProviderExtensions">
+            <summary>
+            Extensions methods for IPackageLicenseInfoProvider.
+            </summary>
+        </member>
+        <member name="M:DotnetRefScan.Extensions.IPackageLicenseInfoProviderExtensions.TryGetLicenses(DotnetRefScan.IPackageLicenseInfoProvider,System.Collections.Generic.List{DotnetRefScan.UsedPackageReference},System.Func{DotnetRefScan.UsedPackageReference,System.Boolean},System.Int32)">
+            <summary>
+            Attempts to get licenses for the given user package references using specific <see cref="T:DotnetRefScan.IPackageLicenseInfoProvider"/> using a parallel execution.
+            The task directly updates the provided <paramref name="references"/> list.
+            </summary>
+            <param name="packageLicenseInfoProvider">Package license info provider.</param>
+            <param name="references">User package references.</param>
+            <param name="shouldLoadLicense">A predicate to specify whether the given reference should get the license info loaded.</param>
+            <param name="maxDegreeOfParallelism">Max degree of parallelism.</param>
+        </member>
         <member name="T:DotnetRefScan.ILicenseReferencesProvider">
             <summary>
             License package reference provider for specific file type.
@@ -244,6 +445,11 @@
         <member name="P:DotnetRefScan.IUsedReferencesProvider.PackageLicenseInfoProvider">
             <summary>
             Gets package license info provider.
+            </summary>
+        </member>
+        <member name="P:DotnetRefScan.IUsedReferencesProvider.LicenseInfoLoadingMaxDegreeOfParallelism">
+            <summary>
+            Gets or sets max degree of parallelism for package license loading.
             </summary>
         </member>
         <member name="M:DotnetRefScan.IUsedReferencesProvider.LoadReferences(System.String,System.Func{DotnetRefScan.UsedPackageReference,System.Boolean})">
@@ -393,6 +599,27 @@
         </member>
         <member name="M:DotnetRefScan.PackageReference.op_Inequality(DotnetRefScan.PackageReference,DotnetRefScan.PackageReference)">
             <inheritdoc/>
+        </member>
+        <member name="T:DotnetRefScan.ProcessExecutor">
+            <summary>
+            Process executor.
+            </summary>
+        </member>
+        <member name="M:DotnetRefScan.ProcessExecutor.RunProcess(System.String,System.String,System.String)">
+            <summary>
+            Runs a specified process and waits for it to exit.
+            </summary>
+            <param name="fileName">Process file name.</param>
+            <param name="arguments">Arguments.</param>
+            <param name="workingDirectory">Working directory.</param>
+        </member>
+        <member name="M:DotnetRefScan.ProcessExecutor.RunProcessWithOutput(System.String,System.String,System.String)">
+            <summary>
+            Runs a specified process, waits for it to exit and reads the output and error streams.
+            </summary>
+            <param name="fileName">Process file name.</param>
+            <param name="arguments">Arguments.</param>
+            <param name="workingDirectory">Working directory.</param>
         </member>
         <member name="T:DotnetRefScan.RefScan">
             <summary>

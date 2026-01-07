@@ -1,4 +1,5 @@
 ﻿using DotnetRefScan.Default;
+using DotnetRefScan.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;

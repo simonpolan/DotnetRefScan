@@ -26,6 +26,11 @@ namespace DotnetRefScan
         IPackageLicenseInfoProvider? PackageLicenseInfoProvider { get; }
 
         /// <summary>
+        /// Gets or sets max degree of parallelism for package license loading.
+        /// </summary>
+        int LicenseInfoLoadingMaxDegreeOfParallelism { get; set; }
+
+        /// <summary>
         /// Loads used package references from the provided file.
         /// </summary>
         /// <param name="fileName">File to load the package references from.</param>

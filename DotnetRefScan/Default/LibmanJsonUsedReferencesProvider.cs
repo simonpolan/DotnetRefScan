@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotnetRefScan.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,9 @@ namespace DotnetRefScan.Default
 
         /// <inheritdoc/>
         public IPackageLicenseInfoProvider? PackageLicenseInfoProvider => null;
+
+        /// <inheritdoc/>
+        public virtual int LicenseInfoLoadingMaxDegreeOfParallelism { get; set; } = 20;
 
         /// <inheritdoc/>
         public virtual async Task<ICollection<UsedPackageReference>> LoadReferences(string? fileName, Func<UsedPackageReference, bool>? shouldLoadLicense)
@@ -53,7 +57,7 @@ namespace DotnetRefScan.Default
                     .ToList()
                     ?? new List<UsedPackageReference>();
 
-            await PackageLicenseInfoProvider.TryGetLicenses(packages, shouldLoadLicense).ConfigureAwait(false);
+            await PackageLicenseInfoProvider.TryGetLicenses(packages, shouldLoadLicense, LicenseInfoLoadingMaxDegreeOfParallelism).ConfigureAwait(false);
 
             return packages;
         }
