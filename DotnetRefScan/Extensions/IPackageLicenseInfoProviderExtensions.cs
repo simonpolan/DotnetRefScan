@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotnetRefScan.Extensions
@@ -22,16 +24,13 @@ namespace DotnetRefScan.Extensions
             if (packageLicenseInfoProvider == null)
                 return;
 
-            var tasks = new List<Task>();
-            Parallel.For(0, references.Count, new ParallelOptions() { MaxDegreeOfParallelism = maxDegreeOfParallelism }, i =>
-            {
-                var r = references[i];
+            var semaphore = new SemaphoreSlim(maxDegreeOfParallelism, maxDegreeOfParallelism);
 
-                if (shouldLoadLicense != null && !shouldLoadLicense(r))
-                    return;
-
-                tasks.Add(TryGetLicense(packageLicenseInfoProvider, references, i));
-            });
+            var tasks = references
+                    .Select((reference, index) => (reference, index))
+                    .Where(r => shouldLoadLicense == null || shouldLoadLicense(r.reference))
+                    .Select(r => TryGetLicense(semaphore, packageLicenseInfoProvider, references, r.index))
+                    .ToList();
 
             if (tasks.Count == 0)
                 return;
@@ -39,11 +38,19 @@ namespace DotnetRefScan.Extensions
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        private static async Task TryGetLicense(IPackageLicenseInfoProvider packageLicenseInfoProvider, List<UsedPackageReference> references, int i)
+        private static async Task TryGetLicense(SemaphoreSlim semaphore, IPackageLicenseInfoProvider packageLicenseInfoProvider, List<UsedPackageReference> references, int i)
         {
-            var r = references[i];
-            var license = await packageLicenseInfoProvider.TryGetLicense(r.Name, r.Version).ConfigureAwait(false);
-            references[i] = new UsedPackageReference(r.Name, r.Version, r.Source, license, r.ProviderName, r.DefinitionFileName);
+            await semaphore.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                var r = references[i];
+                var license = await packageLicenseInfoProvider.TryGetLicense(r.Name, r.Version).ConfigureAwait(false);
+                references[i] = new UsedPackageReference(r.Name, r.Version, r.Source, license, r.ProviderName, r.DefinitionFileName);
+            }
+            finally
+            {
+                semaphore.Release();
+            }
         }
     }
 }
