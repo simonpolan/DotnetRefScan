@@ -41,7 +41,7 @@ namespace DotnetRefScan
         /// <summary>
         /// Gets package license.
         /// </summary>
-        public PackageLicense? License { get; }
+        public PackageLicense? License { get; internal set; }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)

@@ -130,7 +130,7 @@ var licensePackageReferences = await refScan.LoadLicenseReferences("License file
 
 ## Release notes
 
-### 2026-02-02 - 3.1.2
+### 2026-02-03 - 3.1.3
 Fixes for package license info parallel loading.
 
 ### 2026-01-07 - 3.1.1
