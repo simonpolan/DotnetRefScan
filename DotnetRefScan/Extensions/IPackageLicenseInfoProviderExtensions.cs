@@ -45,7 +45,7 @@ namespace DotnetRefScan.Extensions
             {
                 var r = references[i];
                 var license = await packageLicenseInfoProvider.TryGetLicense(r.Name, r.Version).ConfigureAwait(false);
-                references[i] = new UsedPackageReference(r.Name, r.Version, r.Source, license, r.ProviderName, r.DefinitionFileName);
+                references[i].License = license;
             }
             finally
             {
